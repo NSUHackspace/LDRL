@@ -1,0 +1,178 @@
+<robot name="kicker-board">
+    <link name="board">
+        <visual>
+            <geometry>
+                <box size="21 35 .5"/>
+            </geometry>
+            <material name="wood">
+                <color rgba="0.73 0.55 0.389 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="21 35 .5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="horizontal-border1">
+        <visual>
+            <geometry>
+                <box size="21 .5 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="21 .5 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="horizontal-border2">
+        <visual>
+            <geometry>
+                <box size="21 .5 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="21 .5 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="small-horizontal-border1">
+        <visual>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="small-horizontal-border2">
+        <visual>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="small-horizontal-border3">
+        <visual>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="small-horizontal-border4">
+        <visual>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="6.5 .5 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="vertical-border1">
+        <visual>
+            <geometry>
+                <box size=".5 35 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size=".5 35 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="vertical-border2">
+        <visual>
+            <geometry>
+                <box size=".5 35 5"/>
+            </geometry>
+            <material name="wood"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size=".5 35 5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="top-left-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="small-horizontal-border1"/>
+        <origin xyz="-7.25 -7.25 2.5" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="top-right-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="small-horizontal-border2"/>
+        <origin xyz="7.25 -7.25 2.5" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="bottom-left-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="small-horizontal-border3"/>
+        <origin xyz="-7.25 7.25 2.5" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="bottom-right-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="small-horizontal-border4"/>
+        <origin xyz="7.25 7.25 2.5" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="right-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="vertical-border2"/>
+        <origin xyz="10.75 0 2.5" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="left-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="vertical-border1"/>
+        <origin xyz="-10.75 0 2.5" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="top-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="horizontal-border1"/>
+        <origin xyz="0 -17.75 2.5" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="bottom-board-joint" type="fixed">
+        <parent link="board"/>
+        <child link="horizontal-border2"/>
+        <origin xyz="0 17.75 2.5" rpy="0 0 0"/>
+    </joint>
+
+</robot>

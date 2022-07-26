@@ -1,0 +1,115 @@
+<robot name="kicker-arm1">
+
+    <link name="rotator-link">
+        <visual>
+            <geometry>
+                <box size="10 10 10"/>
+            </geometry>
+            <material name="Cyan1">
+                <color rgba="0 0.9 0.9 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <link name="slider-link">
+        <visual>
+            <geometry>
+                <box size="5 10 10"/>
+            </geometry>
+            <material name="Green1">
+                <color rgba="0 0.9 0 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <joint name="slider-rotator-joint" type="revolute">
+        <parent link="rotator-link"/>
+        <child link="slider-link"/>
+        <origin xyz="-7.5 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+    </joint>
+
+    <link name="kernel-link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 1.57 0"/>
+            <geometry>
+                <cylinder radius="0.5" length="26.5"/>
+            </geometry>
+            <material name="control-tube-color">
+                <color rgba=".7 .7 .7 1.0"/>
+            </material>
+        </visual>
+    </link>
+
+    <joint name="kernel-slider-joint" type="prismatic">
+        <parent link="slider-link"/>
+        <child link="kernel-link"/>
+        <origin xyz="-15 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-3" upper="3" effort="10" velocity="3"/>
+    </joint>
+
+    <link name="player1">
+    <visual>
+        <geometry>
+            <box size="3 .5 5.5"/>
+        </geometry>
+        <material name="Player-color1">
+            <color rgba="0.8 0.8 0 1.0"/>
+        </material>
+    </visual>
+    <collision>
+        <geometry>
+            <box size="3 .5 5.5"/>
+        </geometry>
+    </collision>
+    </link>
+
+    <link name="player2">
+    <visual>
+        <geometry>
+            <box size="3 .5 5.5"/>
+        </geometry>
+        <material name="Player-color1"/>
+    </visual>
+        <collision>
+            <geometry>
+                <box size="3 .5 5.5"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="player3">
+    <visual>
+        <geometry>
+            <box size="3 .5 5.5"/>
+<!--            <cylinder radius="1.5" length="5.5"/>-->
+        </geometry>
+        <material name="Player-color1"/>
+    </visual>
+        <collision>
+            <geometry>
+                <box size="3 .5 5.5"/>
+<!--                <cylinder radius="1.5" length="5.5"/>-->
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="player1-kernel-joint" type="fixed">
+        <parent link="kernel-link"/>
+        <child link="player1"/>
+        <origin xyz="0 0 -0.75" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="player2-kernel-joint" type="fixed">
+        <parent link="kernel-link"/>
+        <child link="player2"/>
+        <origin xyz="-6 0 -0.75" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="player3-kernel-joint" type="fixed">
+        <parent link="kernel-link"/>
+        <child link="player3"/>
+        <origin xyz="6 0 -0.75" rpy="0 0 0"/>
+    </joint>
+</robot>
