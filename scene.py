@@ -32,8 +32,8 @@ def gme_create_player(urdf_path: str, pos: (int, int, int), angle=(0, 0, 0, 1)) 
         -1,
         JOINT_FIXED,
         (0, 0, 0),
-        (0, 0, 0),
-        (0, 0, 0),
+        pos,
+        (1, 1, 1),
     )
     return pb_id
 
