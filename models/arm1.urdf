@@ -62,7 +62,7 @@
     <link name="player1">
     <visual>
         <geometry>
-            <box size="3 .5 5.5"/>
+            <box size="3 .5 4"/>
         </geometry>
         <material name="Player-color1">
             <color rgba="0.8 0.8 0 1.0"/>
@@ -70,7 +70,7 @@
     </visual>
     <collision>
         <geometry>
-            <box size="3 .5 5.5"/>
+            <box size="3 .5 4"/>
         </geometry>
     </collision>
     </link>
@@ -78,13 +78,13 @@
     <link name="player2">
     <visual>
         <geometry>
-            <box size="3 .5 5.5"/>
+            <box size="3 .5 4"/>
         </geometry>
         <material name="Player-color1"/>
     </visual>
         <collision>
             <geometry>
-                <box size="3 .5 5.5"/>
+                <box size="3 .5 4"/>
             </geometry>
         </collision>
     </link>
@@ -92,14 +92,14 @@
     <link name="player3">
     <visual>
         <geometry>
-            <box size="3 .5 5.5"/>
+            <box size="3 .5 4"/>
 <!--            <cylinder radius="1.5" length="5.5"/>-->
         </geometry>
         <material name="Player-color1"/>
     </visual>
         <collision>
             <geometry>
-                <box size="3 .5 5.5"/>
+                <box size="3 .5 4"/>
 <!--                <cylinder radius="1.5" length="5.5"/>-->
             </geometry>
         </collision>

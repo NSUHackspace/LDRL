@@ -6,7 +6,8 @@ from math import *
 
 
 pb_client = pybullet.connect(pybullet.GUI)
-
+configureDebugVisualizer(COV_ENABLE_KEYBOARD_SHORTCUTS, 0)
+configureDebugVisualizer(COV_ENABLE_GUI, 0)
 
 pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
 setGravity(0, 0, -9.8)
@@ -33,12 +34,12 @@ def gme_create_player(urdf_path: str, pos: (int, int, int), angle=(0, 0, 0, 1)) 
     return pb_id
 
 
-gme_ply1_arm1 = gme_create_player("./models/arm1.urdf", (23.25, -9.5, 4))
-gme_ply1_arm2 = gme_create_player("./models/arm1.urdf", (23.25, 3.5, 4))
+gme_ply1_arm1 = gme_create_player("./models/arm1.urdf", (23.25, -9.5, 3.25))
+gme_ply1_arm2 = gme_create_player("./models/arm1.urdf", (23.25, 3.5, 3.25))
 
-gme_ply2_arm2 = gme_create_player("./models/arm2.urdf", (-23.25, -3.5, 4),
+gme_ply2_arm2 = gme_create_player("./models/arm2.urdf", (-23.25, -3.5, 3.25),
                          reversed_angle)
-gme_ply2_arm1 = gme_create_player("./models/arm2.urdf", (-23.25, 9.5, 4),
+gme_ply2_arm1 = gme_create_player("./models/arm2.urdf", (-23.25, 9.5, 3.25),
                          reversed_angle)
 
 gme_ball = createMultiBody(
@@ -63,9 +64,9 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int, down_key: 
         nonlocal arm_id, left_key, right_key, up_key, down_key, rotator_id, slider_id
         rotate_pos, slider_pos = 0, 0
         if right_key in keys:
-            slider_pos = -1
-        if left_key in keys:
             slider_pos = 1
+        if left_key in keys:
+            slider_pos = -1
         if up_key in keys:
             rotate_pos = 1
         if down_key in keys:
@@ -87,27 +88,31 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int, down_key: 
                 targetPosition=slider_pos * .5 + slider[0],
             )
         if rotate_pos:
-            print(rotate_pos)
             setJointMotorControl2(
                 arm_id,
                 rotator_id,
                 TORQUE_CONTROL,
-                # targetPosition=1.5 * rotate_pos,
-                force=500 * rotate_pos
+                force=1000 * rotate_pos
             )
     return __check_function
 
 
-arm1_ctrl = bind_arm(gme_ply1_arm1, ord('4'), ord('6'), ord('8'), ord('2'))
-
+ply1_arm1_ctrl = bind_arm(gme_ply1_arm1, B3G_LEFT_ARROW, B3G_RIGHT_ARROW, B3G_UP_ARROW, B3G_DOWN_ARROW)
+ply1_arm2_ctrl = bind_arm(gme_ply1_arm2, ord("a"), ord("d"), ord("w"), ord("s"))
 
 KEY_Q = ord('q')
+KEY_R = ord('r')
+
+start_state = saveState()
 # setRealTimeSimulation(1)
 while True:
     keys = getKeyboardEvents()
     if KEY_Q in keys:
         break
-    arm1_ctrl(keys)
+    if KEY_R in keys:
+        restoreState(start_state)
+    ply1_arm1_ctrl(keys)
+    ply1_arm2_ctrl(keys)
     stepSimulation()
     time.sleep(1/240)
 
