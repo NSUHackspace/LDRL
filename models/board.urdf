@@ -1,4 +1,7 @@
 <robot name="kicker-board">
+
+    <link name="world"/>
+
     <link name="board">
         <visual>
             <geometry>
@@ -14,6 +17,11 @@
             </geometry>
         </collision>
     </link>
+
+    <joint name="board-world-joint" type="fixed">
+        <parent link="world"/>
+        <child link="board"/>
+    </joint>
 
     <link name="horizontal-border1">
         <visual>

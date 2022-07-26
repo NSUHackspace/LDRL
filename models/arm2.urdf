@@ -1,5 +1,7 @@
 <robot name="kicker-arm1">
 
+    <link name="world"/>
+
     <link name="rotator-link">
         <visual>
             <geometry>
@@ -10,6 +12,11 @@
             </material>
         </visual>
     </link>
+
+    <joint name="rotator-world-joint" type="fixed">
+        <parent link="world"/>
+        <child link="rotator-link"/>
+    </joint>
 
     <link name="slider-link">
         <visual>

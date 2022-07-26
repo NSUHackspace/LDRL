@@ -1,5 +1,7 @@
 <robot name="kicker-arm1">
 
+    <link name="world"/>
+
     <link name="rotator-link">
         <visual>
             <geometry>
@@ -10,6 +12,11 @@
             </material>
         </visual>
     </link>
+
+    <joint name="rotator-world-joint" type="fixed">
+        <parent link="world"/>
+        <child link="rotator-link"/>
+    </joint>
 
     <link name="slider-link">
         <visual>
@@ -27,7 +34,9 @@
         <child link="slider-link"/>
         <origin xyz="-7.5 0 0" rpy="0 0 0"/>
         <axis xyz="1 0 0"/>
-        <limit lower="-3.14" upper="3.14" effort="10" velocity="3"/>
+        <limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+<!--        <safety_controller soft_lower_limit="-1" soft_upper_limit="1"/>-->
+
     </joint>
 
     <link name="kernel-link">

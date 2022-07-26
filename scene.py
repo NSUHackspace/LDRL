@@ -17,22 +17,14 @@ reversed_angle = [0, 0, 1, 0]
 
 
 def gme_create_player(urdf_path: str, pos: (int, int, int), angle=(0, 0, 0, 1)) -> int:
-    pb_id = loadURDF(urdf_path, pos, angle, useFixedBase=0)
-    setJointMotorControlArray(
-        pb_id,
-        (0, 1),
-        controlMode=POSITION_CONTROL,
-        targetPositions=(0, 0),
-        targetVelocities=(0, 0),
-    )
-    print(f"------", getLinkState(pb_id, 0))
+    pb_id = loadURDF(urdf_path, pos, angle, useFixedBase=0, )
     createConstraint(
         gme_board,
-        -1,
+        0,
         pb_id,
         0,
         JOINT_FIXED,
-        (1, 1, 1),
+        (0, 0, 0),
         pos,
         (0, 0, 0),
         (0, 0, 0, 1),
@@ -41,16 +33,16 @@ def gme_create_player(urdf_path: str, pos: (int, int, int), angle=(0, 0, 0, 1)) 
     return pb_id
 
 
-gme_ply1_arm1 = gme_create_player("./models/arm1.urdf", (23.25, -9.5, 3.5))
-gme_ply1_arm2 = gme_create_player("./models/arm1.urdf", (23.25, 3.5, 3.5))
+gme_ply1_arm1 = gme_create_player("./models/arm1.urdf", (23.25, -9.5, 4))
+gme_ply1_arm2 = gme_create_player("./models/arm1.urdf", (23.25, 3.5, 4))
 
-gme_ply2_arm2 = gme_create_player("./models/arm2.urdf", (-23.25, -3.5, 3.5),
+gme_ply2_arm2 = gme_create_player("./models/arm2.urdf", (-23.25, -3.5, 4),
                          reversed_angle)
-gme_ply2_arm1 = gme_create_player("./models/arm2.urdf", (-23.25, 9.5, 3.5),
+gme_ply2_arm1 = gme_create_player("./models/arm2.urdf", (-23.25, 9.5, 4),
                          reversed_angle)
 
 gme_ball = createMultiBody(
-    baseMass=1,
+    baseMass=5,
     baseVisualShapeIndex=createCollisionShape(
         shapeType=GEOM_SPHERE,
         radius=1.25,
@@ -65,10 +57,10 @@ gme_ball = createMultiBody(
 
 
 def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int, down_key: int):
-    rotator, slider = getJointStates(arm_id, (0, 1))
+    rotator_id, slider_id = 1, 2
 
     def __check_function(keys):
-        nonlocal  arm_id, left_key, right_key, up_key, down_key, rotator, slider
+        nonlocal arm_id, left_key, right_key, up_key, down_key, rotator_id, slider_id
         rotate_pos, slider_pos = 0, 0
         if right_key in keys:
             slider_pos = -1
@@ -78,17 +70,30 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int, down_key: 
             rotate_pos = 1
         if down_key in keys:
             rotate_pos = -1
-        if rotate_pos or slider_pos:
-            print(f"-------- {rotate_pos} {slider_pos} <{rotator}> <{slider}>")
-            setJointMotorControlArray(
+        if slider_pos:
+            # setJointMotorControl2(
+            #     arm_id,
+            #     slider_id,
+            #     POSITION_CONTROL,
+            #     targetPosition=slider_pos * 3,
+            #     positionGain=.05
+            # )
+
+            slider = getJointState(arm_id, slider_id)
+            setJointMotorControl2(
                 arm_id,
-                (0, 1),
+                slider_id,
                 POSITION_CONTROL,
-                # targetPositions=(rotate_pos, slider_pos),
-                targetVelocities=(0, 0),
-                # forces=(1000, 1000),
-                positionGains=(rotate_pos, slider_pos),
-                # velocityGains=(rotate_pos, slider_pos)
+                targetPosition=slider_pos * .5 + slider[0],
+            )
+        if rotate_pos:
+            print(rotate_pos)
+            setJointMotorControl2(
+                arm_id,
+                rotator_id,
+                TORQUE_CONTROL,
+                # targetPosition=1.5 * rotate_pos,
+                force=500 * rotate_pos
             )
     return __check_function
 
