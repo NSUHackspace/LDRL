@@ -15,17 +15,25 @@ gme_board = loadURDF("./models/board.urdf", useFixedBase=1)
 
 reversed_angle = [0, 0, 1, 0]
 
+
 def gme_create_player(urdf_path: str, pos: (int, int, int), angle=(0, 0, 0, 1)) -> int:
     pb_id = loadURDF(urdf_path, pos, angle, useFixedBase=0)
+    setJointMotorControlArray(
+        pb_id,
+        (0, 1),
+        controlMode=POSITION_CONTROL,
+        targetPositions=(0, 0),
+        targetVelocities=(0, 0),
+    )
     createConstraint(
         gme_board,
-        0,
+        -1,
         pb_id,
-        0,
+        -1,
         JOINT_FIXED,
-        (0,0,0),
-        (0,0,0),
-        (0,0,0)
+        (0, 0, 0),
+        (0, 0, 0),
+        (0, 0, 0),
     )
     return pb_id
 
@@ -60,20 +68,20 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int, down_key: 
         nonlocal  arm_id, left_key, right_key, up_key, down_key, rotator, slider
         rotate_pos, slider_pos = 0, 0
         if right_key in keys:
-            slider_pos = -2
+            slider_pos = -1
         if left_key in keys:
-            slider_pos = 2
+            slider_pos = 1
         if up_key in keys:
-            rotate_pos = 2
+            rotate_pos = 1
         if down_key in keys:
-            rotate_pos = -2
+            rotate_pos = -1
         if rotate_pos or slider_pos:
             print(f"-------- {rotate_pos} {slider_pos} <{rotator}> <{slider}>")
             setJointMotorControlArray(
                 arm_id,
                 (0, 1),
                 POSITION_CONTROL,
-                targetPositions=(rotator[0] + rotate_pos, slider[0] + slider_pos),
+                # targetPositions=(rotate_pos, slider_pos),
                 targetVelocities=(0, 0),
                 # forces=(1000, 1000),
                 positionGains=(rotate_pos, slider_pos),
