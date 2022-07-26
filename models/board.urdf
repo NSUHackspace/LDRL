@@ -130,25 +130,25 @@
     <joint name="top-left-board-joint" type="fixed">
         <parent link="board"/>
         <child link="small-horizontal-border1"/>
-        <origin xyz="-7.25 -7.25 2.5" rpy="0 0 0"/>
+        <origin xyz="-7.25 -13.25 2.5" rpy="0 0 0"/>
     </joint>
 
     <joint name="top-right-board-joint" type="fixed">
         <parent link="board"/>
         <child link="small-horizontal-border2"/>
-        <origin xyz="7.25 -7.25 2.5" rpy="0 0 0"/>
+        <origin xyz="7.25 -13.25 2.5" rpy="0 0 0"/>
     </joint>
 
     <joint name="bottom-left-board-joint" type="fixed">
         <parent link="board"/>
         <child link="small-horizontal-border3"/>
-        <origin xyz="-7.25 7.25 2.5" rpy="0 0 0"/>
+        <origin xyz="-7.25 13.25 2.5" rpy="0 0 0"/>
     </joint>
 
     <joint name="bottom-right-board-joint" type="fixed">
         <parent link="board"/>
         <child link="small-horizontal-border4"/>
-        <origin xyz="7.25 7.25 2.5" rpy="0 0 0"/>
+        <origin xyz="7.25 13.25 2.5" rpy="0 0 0"/>
     </joint>
 
     <joint name="right-board-joint" type="fixed">
