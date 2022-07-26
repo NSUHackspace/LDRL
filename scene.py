@@ -25,15 +25,18 @@ def gme_create_player(urdf_path: str, pos: (int, int, int), angle=(0, 0, 0, 1)) 
         targetPositions=(0, 0),
         targetVelocities=(0, 0),
     )
+    print(f"------", getLinkState(pb_id, 0))
     createConstraint(
         gme_board,
         -1,
         pb_id,
-        -1,
+        0,
         JOINT_FIXED,
-        (0, 0, 0),
-        pos,
         (1, 1, 1),
+        pos,
+        (0, 0, 0),
+        (0, 0, 0, 1),
+        angle,
     )
     return pb_id
 
