@@ -99,6 +99,8 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int, down_key: 
 
 ply1_arm1_ctrl = bind_arm(gme_ply1_arm1, B3G_LEFT_ARROW, B3G_RIGHT_ARROW, B3G_UP_ARROW, B3G_DOWN_ARROW)
 ply1_arm2_ctrl = bind_arm(gme_ply1_arm2, ord("a"), ord("d"), ord("w"), ord("s"))
+ply2_arm1_ctrl = bind_arm(gme_ply2_arm1, ord(";"), ord("\\"), ord("["), ord("'"))
+ply2_arm2_ctrl = bind_arm(gme_ply2_arm2, ord("f"), ord("h"), ord("t"), ord("g"))
 
 KEY_Q = ord('q')
 KEY_R = ord('r')
@@ -113,6 +115,8 @@ while True:
         restoreState(start_state)
     ply1_arm1_ctrl(keys)
     ply1_arm2_ctrl(keys)
+    ply2_arm1_ctrl(keys)
+    ply2_arm2_ctrl(keys)
     stepSimulation()
     time.sleep(1/240)
 
