@@ -5,11 +5,12 @@ import pybullet_data
 from math import *
 
 
-pb_client = pybullet.connect(pybullet.GUI)
+pb_client = pybullet.connect(pybullet.GUI, options="--width=1500")
 
 
 pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
-setGravity(0, 0, -9.8)
+pybullet.resetDebugVisualizerCamera(cameraDistance=50, cameraYaw=100, cameraPitch=-40, cameraTargetPosition=(0,0,0))
+pybullet.setGravity(0, 0, -9.8)
 
 gme_board = loadURDF("./models/board.urdf", useFixedBase=1)
 
@@ -93,6 +94,7 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int, down_key: 
 arm1_ctrl = bind_arm(gme_ply1_arm1, ord('4'), ord('6'), ord('8'), ord('2'))
 
 
+
 KEY_Q = ord('q')
 # setRealTimeSimulation(1)
 while True:
@@ -100,7 +102,7 @@ while True:
     if KEY_Q in keys:
         break
     arm1_ctrl(keys)
-    stepSimulation()
-    time.sleep(1/240)
+    pybullet.stepSimulation()
+    time.sleep(1/20)
 
 pybullet.disconnect()
