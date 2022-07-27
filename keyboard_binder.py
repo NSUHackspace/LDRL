@@ -44,7 +44,7 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int,
                 arm_id,
                 rotator_id,
                 TORQUE_CONTROL,
-                force=1000 * rotate_pos
+                force=2000 * rotate_pos
             )
 
     __binds.append(__check_function)

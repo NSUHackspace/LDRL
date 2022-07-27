@@ -51,3 +51,4 @@ gme_ball = createMultiBody(
     basePosition=(0, 0, 1.5),
 )
 
+zero_state = saveState()
