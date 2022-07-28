@@ -48,15 +48,15 @@ def create_scene(physicsClientId: int = 0) -> tuple[dict[str, int], start_state]
                                                 reversed_angle)
 
     objects['ball'] = createMultiBody(
-        baseMass=5,
+        baseMass=1,
         baseVisualShapeIndex=createCollisionShape(
             shapeType=GEOM_SPHERE,
-            radius=1.25,
+            radius=1.00,
             physicsClientId=physicsClientId
         ),
         baseCollisionShapeIndex=createVisualShape(
             shapeType=GEOM_SPHERE,
-            radius=1.25,
+            radius=1.00,
             rgbaColor=(.7, .7, .7, 1),
             physicsClientId=physicsClientId
         ),

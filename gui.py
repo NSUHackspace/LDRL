@@ -27,6 +27,7 @@ ply2_arm2_ctrl = bind_arm(gme_ply2_arm2, ord("g"), ord("t"), ord("f"), ord("h"))
 
 KEY_Q = ord('q')
 KEY_R = ord('r')
+KEY_C = ord('c')
 
 while True:
     keys = getKeyboardEvents()
@@ -36,6 +37,8 @@ while True:
         reset(zero_state,
               (gme_ply1_arm1, gme_ply2_arm1, gme_ply2_arm2, gme_ply1_arm2),
               pb_client)
+    if KEY_C in keys:
+        camera_reset(pb_client)
     update_arms(keys)
     stepSimulation()
     time.sleep(1 / 240)
