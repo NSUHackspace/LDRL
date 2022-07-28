@@ -10,8 +10,7 @@ from typing import *
 
 
 class Kicker(gym.Env):
-    metadata = {'render_modes': ['human', "rgb_array", "single_rgb_array"],
-                "render_fps": 4}
+    metadata = {'render_modes': ['human']}
 
     def __init__(self,
                  bullet_connection_type: int = DIRECT,
@@ -37,10 +36,12 @@ class Kicker(gym.Env):
             )),
         })
 
+        # TODO: edit rotator:
+        # https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.jxof6bt5vhut
         self.action_space = spaces.Tuple((
             spaces.Dict({
-                "rotator": spaces.Discrete(3, start=-1),
-                "slider": spaces.Box(-3, 3),
+                "rotator": spaces.Discrete(3, start=-1),  # direction of force application
+                "slider": spaces.Box(-3, 3),  # "middle player" position
             }),
             spaces.Dict({
                 "rotator": spaces.Discrete(3, start=-1),
@@ -104,20 +105,22 @@ class Kicker(gym.Env):
         Tuple[ObsType, float, bool, bool, dict], Tuple[
             ObsType, float, bool, dict]
     ]:
+        rotator_id, slider_id = 1, 2
         arm1_rotator_action = action[0]["rotator"]
         arm1_slider_pos = action[0]["slider"]
         arm2_rotator_action = action[1]["rotator"]
         arm2_slider_pos = action[1]["slider"]
 
+        # setting new state
         setJointMotorControl2(
             self.pb_objects["player1_arm1"],
-            2,
+            slider_id,
             POSITION_CONTROL,
             targetPosition=arm1_slider_pos,
         )
         setJointMotorControl2(
             self.pb_objects["player1_arm1"],
-            1,
+            rotator_id,
             TORQUE_CONTROL,
             force=2000 * arm1_rotator_action,
 
@@ -125,13 +128,13 @@ class Kicker(gym.Env):
 
         setJointMotorControl2(
             self.pb_objects["player1_arm2"],
-            2,
+            slider_id,
             POSITION_CONTROL,
             targetPosition=arm2_slider_pos,
         )
         setJointMotorControl2(
             self.pb_objects["player1_arm2"],
-            1,
+            rotator_id,
             TORQUE_CONTROL,
             force=2000 * arm2_rotator_action,
 
