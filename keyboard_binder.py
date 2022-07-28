@@ -40,6 +40,7 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int,
                 targetPosition=slider_pos * .5 + slider[0],
             )
         if rotate_pos:
+            # print(getJointState(arm_id, rotator_id))
             setJointMotorControl2(
                 arm_id,
                 rotator_id,
