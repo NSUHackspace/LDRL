@@ -40,12 +40,15 @@ class Kicker(gym.Env):
         # https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.jxof6bt5vhut
         self.action_space = spaces.Tuple((
             spaces.Dict({
-                "rotator": spaces.Discrete(3, start=-1),  # direction of force application
-                "slider": spaces.Box(-3, 3),  # "middle player" position
+                # "rotator": spaces.Discrete(3, start=-1),  # direction of force application
+                # TODO: add coef to gain
+                "rotator": spaces.Box(-30, 30),  # direction of force application
+                # "slider": spaces.Box(-3, 3),  # "middle player" position
+                "slider": spaces.Box(-30, 30),
             }),
             spaces.Dict({
-                "rotator": spaces.Discrete(3, start=-1),
-                "slider": spaces.Box(-3, 3),
+                "rotator": spaces.Box(-30, 30),
+                "slider": spaces.Box(-30, 30),
             }),
         ))
 
@@ -115,28 +118,28 @@ class Kicker(gym.Env):
         setJointMotorControl2(
             self.pb_objects["player1_arm1"],
             slider_id,
-            POSITION_CONTROL,
+            VELOCITY_CONTROL,
             targetPosition=arm1_slider_pos,
         )
         setJointMotorControl2(
             self.pb_objects["player1_arm1"],
             rotator_id,
-            TORQUE_CONTROL,
-            force=2000 * arm1_rotator_action,
+            VELOCITY_CONTROL,
+            targetPosition=arm1_rotator_action,
 
         )
 
         setJointMotorControl2(
             self.pb_objects["player1_arm2"],
             slider_id,
-            POSITION_CONTROL,
+            VELOCITY_CONTROL,
             targetPosition=arm2_slider_pos,
         )
         setJointMotorControl2(
             self.pb_objects["player1_arm2"],
             rotator_id,
-            TORQUE_CONTROL,
-            force=2000 * arm2_rotator_action,
+            VELOCITY_CONTROL,
+            targetPosition=arm2_rotator_action,
 
         )
         done = is_win(self.pb_objects["ball"], self.pb_connection)
