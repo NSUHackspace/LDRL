@@ -109,23 +109,23 @@ class Kicker(gym.Env):
             ObsType, float, bool, dict]
     ]:
         rotator_id, slider_id = 1, 2
-        arm1_rotator_action = action[0]["rotator"]
-        arm1_slider_pos = action[0]["slider"]
-        arm2_rotator_action = action[1]["rotator"]
-        arm2_slider_pos = action[1]["slider"]
+        arm1_rotator_v = action[0]["rotator"]
+        arm1_slider_v = action[0]["slider"]
+        arm2_rotator_v = action[1]["rotator"]
+        arm2_slider_v = action[1]["slider"]
 
         # setting new state
         setJointMotorControl2(
             self.pb_objects["player1_arm1"],
             slider_id,
             VELOCITY_CONTROL,
-            targetPosition=arm1_slider_pos,
+            targetPosition=arm1_slider_v,
         )
         setJointMotorControl2(
             self.pb_objects["player1_arm1"],
             rotator_id,
             VELOCITY_CONTROL,
-            targetPosition=arm1_rotator_action,
+            targetPosition=arm1_rotator_v,
 
         )
 
@@ -133,13 +133,13 @@ class Kicker(gym.Env):
             self.pb_objects["player1_arm2"],
             slider_id,
             VELOCITY_CONTROL,
-            targetPosition=arm2_slider_pos,
+            targetPosition=arm2_slider_v,
         )
         setJointMotorControl2(
             self.pb_objects["player1_arm2"],
             rotator_id,
             VELOCITY_CONTROL,
-            targetPosition=arm2_rotator_action,
+            targetPosition=arm2_rotator_v,
 
         )
         done = is_win(self.pb_objects["ball"], self.pb_connection)
