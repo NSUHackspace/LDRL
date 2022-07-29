@@ -8,11 +8,11 @@ from typing import Tuple, Union, Optional, List
 from gym.utils.renderer import Renderer
 
 
-class Kicker(gym.Env):
+class KickerEnv(gym.Env):
     metadata = {'render_modes': ['human', 'rgba_array']}
 
     def __init__(self,
-                 bullet_connection_type: int = pb.DIRECT,
+                 bullet_connection_type: int = pb.GUI,
                  render_mode: str = 'human',
                  render_resolution: Tuple[int, int] = (1024, 800),
                  player: 1 or 2 = 1,  # unused for now
@@ -71,6 +71,7 @@ class Kicker(gym.Env):
         self.pb_connection = pb.connect(bullet_connection_type)
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
 
+        self.renderer = None
         if render_mode != "human":
            self.renderer = Renderer(self.render_mode, self._render_frame)
 
@@ -172,7 +173,8 @@ class Kicker(gym.Env):
         obs = self._get_obs()
 
         stepSimulation(self.pb_connection)
-        self.renderer.render_step()
+        if self.renderer:
+            self.renderer.render_step()
 
         return obs, reward, done, {}
 

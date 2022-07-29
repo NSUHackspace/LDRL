@@ -68,15 +68,15 @@ def create_scene(physicsClientId: int = 0) -> Tuple[
 
     # ball creation
     objects['ball'] = createMultiBody(
-        baseMass=1,
+        baseMass=10,
         baseVisualShapeIndex=createCollisionShape(
             shapeType=pb.GEOM_SPHERE,
-            radius=1.00,
+            radius=1.25,
             physicsClientId=physicsClientId
         ),
         baseCollisionShapeIndex=createVisualShape(
             shapeType=pb.GEOM_SPHERE,
-            radius=1.00,
+            radius=1.25,
             rgbaColor=(.7, .7, .7, 1),
             physicsClientId=physicsClientId
         ),
