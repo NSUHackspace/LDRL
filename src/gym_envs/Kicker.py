@@ -6,6 +6,7 @@ from src.scene.kicker import create_scene
 from src.utils.scene_functions import *
 from typing import Tuple, Union, Optional, List
 from gym.utils.renderer import Renderer
+from src.ai.firstSimple import create_bot
 
 
 class KickerEnv(gym.Env):
@@ -15,6 +16,7 @@ class KickerEnv(gym.Env):
                  bullet_connection_type: int = pb.GUI,
                  render_mode: str = 'human',
                  render_resolution: Tuple[int, int] = (1024, 800),
+                 enable_ai: bool = True,
                  player: 1 or 2 = 1,  # unused for now
                  ):
 
@@ -74,6 +76,15 @@ class KickerEnv(gym.Env):
         self.renderer = None
         if render_mode != "human":
            self.renderer = Renderer(self.render_mode, self._render_frame)
+
+        self.ai_bot = create_bot(
+            self.pb_objects["player2_arm1"],
+            self.pb_objects["player2_arm2"],
+            self.pb_objects["ball"],
+            self.pb_connection
+        ) if enable_ai else None
+
+        camera_reset(self.pb_connection)
 
     def _render_frame(self):
         return getCameraImage(
@@ -174,6 +185,9 @@ class KickerEnv(gym.Env):
         done = bool(is_done(self.pb_objects["ball"], self.pb_connection))
         reward = simple_reward(self.pb_objects["ball"], self.pb_connection)
         obs = self._get_obs()
+
+        if self.ai_bot:
+            self.ai_bot()
 
         stepSimulation(self.pb_connection)
         if self.renderer:
