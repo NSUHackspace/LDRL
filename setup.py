@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='Kicker',
-    version='1.0',
-    packages=['gym', 'numpy', 'pybullet'],
+    version='',
+    packages=[''],
     url='',
     license='',
     author='LDRL',
