@@ -1,12 +1,13 @@
 import pybullet as pb
 from pybullet import *
 import pybullet_data
+from typing import Tuple, Dict
 
 start_state = int
 
 
-def create_scene(physicsClientId: int = 0) -> tuple[
-    dict[str, int], start_state]:
+def create_scene(physicsClientId: int = 0) -> Tuple[
+    Dict[str, int], start_state]:
     """
     * loads all .urdf assets for kicker
     * creates ball
@@ -20,12 +21,14 @@ def create_scene(physicsClientId: int = 0) -> tuple[
     pb.setAdditionalSearchPath(pybullet_data.getDataPath())
     setGravity(0, 0, -9.8, physicsClientId=physicsClientId)
 
-    objects['board'] = pb.loadURDF("./src/scene/assets/board.urdf", useFixedBase=1,
-                                         physicsClientId=physicsClientId)
+    objects['board'] = pb.loadURDF("./src/scene/assets/board.urdf",
+                                   useFixedBase=1,
+                                   physicsClientId=physicsClientId)
 
     reversed_angle = [0, 0, 1, 0]
 
-    def gme_create_player(urdf_path: str, pos: tuple[float, float, float],
+    def gme_create_player(urdf_path: str,
+                          pos: Tuple[float, float, float],
                           angle=(0., 0., 0., 1.)) -> int:
         """
         Loads the arm model and hardwires it to the static board
@@ -36,7 +39,7 @@ def create_scene(physicsClientId: int = 0) -> tuple[
         :return: arms unique id
         """
         pb_id = pb.loadURDF(urdf_path, pos, angle, useFixedBase=0,
-                                  physicsClientId=physicsClientId)
+                            physicsClientId=physicsClientId)
         createConstraint(
             objects['board'],
             0,

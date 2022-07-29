@@ -5,7 +5,7 @@ from scene.kicker import create_scene
 from utils.scene_functions import *
 
 # initialize client
-pb_client = pybullet.connect(pybullet.GUI)
+pb_client = pb.connect(pb.GUI)
 # reset camera
 resetDebugVisualizerCamera(cameraDistance=20, cameraYaw=90,
                            cameraPitch=-89.99999,
@@ -47,4 +47,4 @@ while True:
     stepSimulation()
     time.sleep(1 / 240)
 
-pybullet.disconnect()
+pb.disconnect()

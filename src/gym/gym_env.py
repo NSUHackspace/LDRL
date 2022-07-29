@@ -1,20 +1,25 @@
 import gym
 from gym import spaces
-from gym.core import ObsType, ActType
+from gym.core import ObsType, ActType, RenderFrame
 import numpy as np
 from src.scene.kicker import create_scene
 from src.utils.scene_functions import *
-from typing import *
+from typing import Tuple, Union, Optional, List
+from gym.utils.renderer import Renderer
 
 
 class Kicker(gym.Env):
-    metadata = {'render_modes': ['human']}
+    metadata = {'render_modes': ['human', 'rgba_array']}
 
     def __init__(self,
-                 bullet_connection_type: int = pybullet.DIRECT,
+                 bullet_connection_type: int = pb.DIRECT,
                  render_mode: str = 'human',
+                 render_resolution: Tuple[int, int] = (1024, 800),
                  player: 1 or 2 = 1,  # unused for now
                  ):
+
+        self.camera_width, self.camera_height = render_resolution
+
         self.render_mode = render_mode if render_mode in self.metadata[
             'render_modes'] else 'human'
 
@@ -63,8 +68,21 @@ class Kicker(gym.Env):
             }),
         ))
 
-        self.pb_connection = pybullet.connect(bullet_connection_type)
+        self.pb_connection = pb.connect(bullet_connection_type)
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
+
+        if render_mode != "human":
+           self.renderer = Renderer(self.render_mode, self._render_frame)
+
+    def _render_frame(self):
+        return getCameraImage(
+            self.camera_width,
+            self.camera_height,
+            physicsClientId=self.pb_connection,
+        )[2]
+
+    def render(self, mode="human") -> Optional[Union[RenderFrame, List[RenderFrame]]]:
+        return self.renderer.get_renders()
 
     def _get_obs(self):
         # rotator_id, slider_id = 1, 2
@@ -135,7 +153,7 @@ class Kicker(gym.Env):
         setJointMotorControlArray(
             self.pb_objects["player1_arm1"],
             (rotator_id, slider_id),
-            pybullet.VELOCITY_CONTROL,
+            pb.VELOCITY_CONTROL,
             targetVelocities=(arm1_rotator_velocity, arm1_slider_velocity),
             velocityGains=(arm1_rotator_k, arm1_slider_k),
             physicsClientId=self.pb_connection
@@ -143,7 +161,7 @@ class Kicker(gym.Env):
         setJointMotorControlArray(
             self.pb_objects["player1_arm2"],
             (rotator_id, slider_id),
-            pybullet.VELOCITY_CONTROL,
+            pb.VELOCITY_CONTROL,
             targetVelocities=(arm2_rotator_velocity, arm2_slider_velocity),
             velocityGains=(arm2_rotator_k, arm2_slider_k),
             physicsClientId=self.pb_connection
@@ -154,6 +172,7 @@ class Kicker(gym.Env):
         obs = self._get_obs()
 
         stepSimulation(self.pb_connection)
+        self.renderer.render_step()
 
         return obs, reward, done, {}
 
