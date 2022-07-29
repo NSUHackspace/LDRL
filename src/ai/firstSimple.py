@@ -12,19 +12,20 @@ def create_bot(arm1_id: int, arm2_id: int, ball_id: int,
     p1_b, p2_b, p3_b = map(lambda x: x[4], getLinkStates(arm2_id, (3, 4, 5),
                                                          physicsClientId=physicsClientId))
     sx = 3
-    p1ymi, p1yma = p1_a[1] - 3, p1_a[1] + 3
-    p2ymi, p2yma = p1_b[1] - 3, p1_b[1]
+    p1ymi, p1yma = p1_a[1] - 3, p1_a[1] + .3
+    p2ymi, p2yma = p1_b[1] - 4, p1_b[1] + 4
+    force = 5000
 
     def f():
         x, y, z = \
         getBasePositionAndOrientation(ball_id, physicsClientId=physicsClientId)[
             0]
-        if p1ymi <= y <= p1yma and z < p1_a[2]:
+        if p1ymi <= y <= p1yma and z < 5:
             setJointMotorControl2(
                 arm1_id,
                 rotator_id,
                 pb.TORQUE_CONTROL,
-                force=2000,
+                force=force,
                 physicsClientId=physicsClientId
             )
         else:
@@ -32,23 +33,32 @@ def create_bot(arm1_id: int, arm2_id: int, ball_id: int,
                 arm1_id,
                 rotator_id,
                 pb.TORQUE_CONTROL,
-                force=-2000,
+                force=-force / 2,
                 physicsClientId=physicsClientId
             )
-        if p2ymi <= y <= p2yma and z < p1_a[2]:
+        if p2ymi <= y <= p1_b[1] and z < 5:
             setJointMotorControl2(
                 arm2_id,
                 rotator_id,
                 pb.TORQUE_CONTROL,
-                force=2000,
+                force=force,
+                physicsClientId=physicsClientId
+            )
+        elif p1_b[1] < y <= p2yma and z < 5:
+            setJointMotorControl2(
+                arm2_id,
+                rotator_id,
+                pb.TORQUE_CONTROL,
+                force=-force,
                 physicsClientId=physicsClientId
             )
         else:
             setJointMotorControl2(
                 arm2_id,
                 rotator_id,
-                pb.TORQUE_CONTROL,
-                force=-2000,
+                pb.POSITION_CONTROL,
+                targetPosition=0,
+                force=force/2,
                 physicsClientId=physicsClientId
             )
         if x > p2_b[0]:

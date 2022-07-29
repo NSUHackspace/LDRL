@@ -70,7 +70,10 @@ class KickerEnv(gym.Env):
             }),
         ))
 
-        self.pb_connection = pb.connect(bullet_connection_type)
+        self.pb_connection = pb.connect(bullet_connection_type, options=f"--width={render_resolution[0]} --height={render_resolution[1]}")
+        configureDebugVisualizer(COV_ENABLE_KEYBOARD_SHORTCUTS, 0, physicsClientId=self.pb_connection)
+        configureDebugVisualizer(COV_ENABLE_GUI, 0, physicsClientId=self.pb_connection)
+        camera_reset(self.pb_connection)
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
 
         self.renderer = None
@@ -83,8 +86,6 @@ class KickerEnv(gym.Env):
             self.pb_objects["ball"],
             self.pb_connection
         ) if enable_ai else None
-
-        camera_reset(self.pb_connection)
 
     def _render_frame(self):
         return getCameraImage(
