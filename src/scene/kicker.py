@@ -20,7 +20,7 @@ def create_scene(physicsClientId: int = 0) -> tuple[
     pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
     setGravity(0, 0, -9.8, physicsClientId=physicsClientId)
 
-    objects['board'] = pybullet.loadURDF("./assets/board.urdf", useFixedBase=1,
+    objects['board'] = pybullet.loadURDF("./src/scene/assets/board.urdf", useFixedBase=1,
                                          physicsClientId=physicsClientId)
 
     reversed_angle = [0, 0, 1, 0]
@@ -52,14 +52,14 @@ def create_scene(physicsClientId: int = 0) -> tuple[
         )
         return pb_id
 
-    objects['player1_arm1'] = gme_create_player("./assets/arm1.urdf",
+    objects['player1_arm1'] = gme_create_player("./src/scene/assets/arm1.urdf",
                                                 (23.25, -9.5, 3.25))
-    objects['player1_arm2'] = gme_create_player("./assets/arm1.urdf",
+    objects['player1_arm2'] = gme_create_player("./src/scene/assets/arm1.urdf",
                                                 (23.25, 3.5, 3.25))
-    objects['player2_arm1'] = gme_create_player("./assets/arm2.urdf",
+    objects['player2_arm1'] = gme_create_player("./src/scene/assets/arm2.urdf",
                                                 (-23.25, 9.5, 3.25),
                                                 reversed_angle)
-    objects['player2_arm2'] = gme_create_player("./assets/arm2.urdf",
+    objects['player2_arm2'] = gme_create_player("./src/scene/assets/arm2.urdf",
                                                 (-23.25, -3.5, 3.25),
                                                 reversed_angle)
 

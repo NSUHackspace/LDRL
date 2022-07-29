@@ -2,8 +2,8 @@ import gym
 from gym import spaces
 from gym.core import ObsType, ActType
 import numpy as np
-from scene.kicker import create_scene
-from utils.scene_functions import *
+from src.scene.kicker import create_scene
+from src.utils.scene_functions import *
 from typing import *
 
 
