@@ -87,30 +87,33 @@ class KickerEnv(gym.Env):
 
     def _get_obs(self):
         # rotator_id, slider_id = 1, 2
+        p1a1 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
+        p1a2 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
+        p2a1 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
+        p2a2 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
         return {
             "ball": getBasePositionAndOrientation(
                 self.pb_objects['ball'],
                 physicsClientId=self.pb_connection
             )[0],
-            # TODO: getJoinState -> getJointStates
             "player1_arms": (
                 (
-                    getJointState(self.pb_objects["player1_arm1"], 1)[0],
-                    getJointState(self.pb_objects["player1_arm1"], 2)[0],
+                    p1a1[0][0],
+                    p1a1[1][0],
                 ),
                 (
-                    getJointState(self.pb_objects["player1_arm2"], 1)[0],
-                    getJointState(self.pb_objects["player1_arm2"], 2)[0],
+                    p1a2[0][0],
+                    p1a2[1][0],
                 ),
             ),
             "player2_arms": (
                 (
-                    getJointState(self.pb_objects["player2_arm1"], 1)[0],
-                    getJointState(self.pb_objects["player2_arm1"], 2)[0],
+                    p2a1[0][0],
+                    p2a1[1][0],
                 ),
                 (
-                    getJointState(self.pb_objects["player2_arm2"], 1)[0],
-                    getJointState(self.pb_objects["player2_arm2"], 2)[0],
+                    p2a2[0][0],
+                    p2a2[1][0],
                 ),
             )
         }
