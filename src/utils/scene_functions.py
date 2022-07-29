@@ -1,5 +1,5 @@
 from pybullet import *
-import pybullet
+import pybullet as pb
 from typing import Iterable
 
 # Variables dependent on urdf models. Set globally for simplicity
@@ -18,14 +18,14 @@ def _reset_arm(arm_id: int, physicsClientId: int = 0):
     setJointMotorControl2(
         arm_id,
         __slider_id,
-        pybullet.POSITION_CONTROL,
+        pb.POSITION_CONTROL,
         targetPosition=0,
         physicsClientId=physicsClientId,
     )
     setJointMotorControl2(
         arm_id,
         __rotator_id,
-        pybullet.POSITION_CONTROL,
+        pb.POSITION_CONTROL,
         targetPosition=0,
         force=0,
         physicsClientId=physicsClientId,
@@ -97,7 +97,7 @@ def scene_reset(zero_state: int, arms_id_list: Iterable[int],
     :param physicsClientId: client id for multiple connections
     :return:
     """
-    pybullet.restoreState(zero_state, physicsClientId=physicsClientId)
+    pb.restoreState(zero_state, physicsClientId=physicsClientId)
     for arm_id in arms_id_list:
         _reset_arm(arm_id, physicsClientId=physicsClientId)
 

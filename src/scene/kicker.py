@@ -1,4 +1,4 @@
-import pybullet
+import pybullet as pb
 from pybullet import *
 import pybullet_data
 
@@ -17,10 +17,10 @@ def create_scene(physicsClientId: int = 0) -> tuple[
     """
     objects = dict()
 
-    pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
+    pb.setAdditionalSearchPath(pybullet_data.getDataPath())
     setGravity(0, 0, -9.8, physicsClientId=physicsClientId)
 
-    objects['board'] = pybullet.loadURDF("./src/scene/assets/board.urdf", useFixedBase=1,
+    objects['board'] = pb.loadURDF("./src/scene/assets/board.urdf", useFixedBase=1,
                                          physicsClientId=physicsClientId)
 
     reversed_angle = [0, 0, 1, 0]
@@ -35,7 +35,7 @@ def create_scene(physicsClientId: int = 0) -> tuple[
         :param angle: view angle in Quaternion form(?)
         :return: arms unique id
         """
-        pb_id = pybullet.loadURDF(urdf_path, pos, angle, useFixedBase=0,
+        pb_id = pb.loadURDF(urdf_path, pos, angle, useFixedBase=0,
                                   physicsClientId=physicsClientId)
         createConstraint(
             objects['board'],
@@ -67,12 +67,12 @@ def create_scene(physicsClientId: int = 0) -> tuple[
     objects['ball'] = createMultiBody(
         baseMass=1,
         baseVisualShapeIndex=createCollisionShape(
-            shapeType=pybullet.GEOM_SPHERE,
+            shapeType=pb.GEOM_SPHERE,
             radius=1.00,
             physicsClientId=physicsClientId
         ),
         baseCollisionShapeIndex=createVisualShape(
-            shapeType=pybullet.GEOM_SPHERE,
+            shapeType=pb.GEOM_SPHERE,
             radius=1.00,
             rgbaColor=(.7, .7, .7, 1),
             physicsClientId=physicsClientId
@@ -82,6 +82,6 @@ def create_scene(physicsClientId: int = 0) -> tuple[
     )
 
     # saving created scene
-    zero_state = pybullet.saveState(physicsClientId)
+    zero_state = pb.saveState(physicsClientId)
 
     return objects, zero_state

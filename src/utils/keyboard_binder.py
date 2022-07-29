@@ -1,7 +1,8 @@
 from pybullet import *
-import pybullet
+import pybullet as pb
+from typing import List, Callable
 
-__binds: list[callable] = []
+__binds: List[Callable] = []
 
 
 def update_arms(keys):
@@ -51,7 +52,7 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int,
             setJointMotorControl2(
                 arm_id,
                 slider_id,
-                pybullet.POSITION_CONTROL,
+                pb.POSITION_CONTROL,
                 targetPosition=slider_pos * .5 + slider[0],
             )
         if rotate_pos:
@@ -59,7 +60,7 @@ def bind_arm(arm_id: int, left_key: int, right_key: int, up_key: int,
             setJointMotorControl2(
                 arm_id,
                 rotator_id,
-                pybullet.TORQUE_CONTROL,
+                pb.TORQUE_CONTROL,
                 force=2000 * rotate_pos
             )
 
