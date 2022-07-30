@@ -120,9 +120,9 @@ class KickerEnv(gym.Env):
     def _get_obs(self):
         # rotator_id, slider_id = 1, 2
         p1a1 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
-        p1a2 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
-        p2a1 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
-        p2a2 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
+        p1a2 = getJointStates(self.pb_objects["player1_arm2"], (1, 2))
+        p2a1 = getJointStates(self.pb_objects["player2_arm1"], (1, 2))
+        p2a2 = getJointStates(self.pb_objects["player2_arm2"], (1, 2))
         return {
             "ball": getBasePositionAndOrientation(
                 self.pb_objects['ball'],

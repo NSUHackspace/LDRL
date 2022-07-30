@@ -23,7 +23,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
         x, y, z = \
         getBasePositionAndOrientation(ball_id, physicsClientId=physicsClientId)[
             0]
-        if p1ymi <= y <= p1yma and z < 5:
+        if p1ymi <= y <= p1yma and z < 3:
             setJointMotorControl2(
                 arm1_id,
                 rotator_id,
@@ -39,7 +39,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 force=-force / 2,
                 physicsClientId=physicsClientId
             )
-        if p2ymi <= y <= p1_b[1] and z < 5:
+        if p2ymi <= y <= p1_b[1] and z < 3:
             setJointMotorControl2(
                 arm2_id,
                 rotator_id,
@@ -47,7 +47,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 force=force,
                 physicsClientId=physicsClientId
             )
-        elif p1_b[1] < y <= p2yma and z < 5:
+        elif p1_b[1] < y <= p2yma and z < 3:
             setJointMotorControl2(
                 arm2_id,
                 rotator_id,
