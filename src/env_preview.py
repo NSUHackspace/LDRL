@@ -33,7 +33,7 @@ KEY_R = ord('r')
 KEY_C = ord('c')
 
 
-bot_f = create_bot(gme_ply2_arm1, gme_ply2_arm2, gme_ball)
+bot_f = create_bot(objects)
 
 while True:
 

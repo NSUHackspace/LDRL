@@ -1,10 +1,13 @@
 from pybullet import getLinkStates, getBasePositionAndOrientation, \
     setJointMotorControl2
 import pybullet as pb
+from typing import Dict
 
 
-def create_bot(arm1_id: int, arm2_id: int, ball_id: int,
-              physicsClientId: int = 0):
+def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
+    arm1_id = pb_objects["player2_arm1"]
+    arm2_id = pb_objects["player2_arm2"]
+    ball_id = pb_objects["ball"]
     rotator_id, slider_id = 1, 2
     # print(*getLinkStates(arm_id, (0,1,2,3,4,5)), sep="\n>")
     p1_a, p2_a, p3_a = map(lambda x: x[4], getLinkStates(arm1_id, (3, 4, 5),

@@ -4,9 +4,12 @@ from gym.core import ObsType, ActType, RenderFrame
 import numpy as np
 from src.scene.kicker import create_scene
 from src.utils.scene_functions import *
-from typing import Tuple, Union, Optional, List
+from typing import Tuple, Union, Optional, List, Callable, Dict
 from gym.utils.renderer import Renderer
 from src.ai.firstSimple import create_bot
+
+# types for typing
+physicsClientId = int
 
 
 class KickerEnv(gym.Env):
@@ -16,10 +19,21 @@ class KickerEnv(gym.Env):
                  bullet_connection_type: int = pb.GUI,
                  render_mode: str = 'human',
                  render_resolution: Tuple[int, int] = (1024, 800),
-                 enable_ai: bool = True,
+                 ai_function: Optional[Callable[
+                     [Dict[str, int], physicsClientId], Callable]] = create_bot,
+                 reward_function: Callable[
+                     [Tuple[int, int, int], physicsClientId], int] = simple_reward,
                  player: 1 or 2 = 1,  # unused for now
                  ):
+        """
 
+        :param bullet_connection_type: connection type from pybullet(Direct, GUI?)
+        :param render_mode: "human" for gui and rgba_array for pixel array
+        :param render_resolution:
+        :param ai_function: <b> can be None</b> function that accepts dictionary of objects (and physicsClientId) and return function that control player on call
+        :param reward_function: Function that accepts: (Arm1 unique id, Arm2 unique id, ball unique id, physicsClientId)
+        :param player: Which player will be controlled by env (Unused!)
+        """
         self.camera_width, self.camera_height = render_resolution
 
         self.render_mode = render_mode if render_mode in self.metadata[
@@ -43,7 +57,6 @@ class KickerEnv(gym.Env):
             )),
         })
 
-        # TODO: edit rotator:
         # https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.jxof6bt5vhut
         self.action_space = spaces.Tuple((
             spaces.Dict({
@@ -70,22 +83,28 @@ class KickerEnv(gym.Env):
             }),
         ))
 
-        self.pb_connection = pb.connect(bullet_connection_type, options=f"--width={render_resolution[0]} --height={render_resolution[1]}")
-        configureDebugVisualizer(COV_ENABLE_KEYBOARD_SHORTCUTS, 0, physicsClientId=self.pb_connection)
-        configureDebugVisualizer(COV_ENABLE_GUI, 0, physicsClientId=self.pb_connection)
+        self.pb_connection = pb.connect(
+            bullet_connection_type,
+            options=f"--width={render_resolution[0]} --height={render_resolution[1]}"
+        )
+        configureDebugVisualizer(COV_ENABLE_KEYBOARD_SHORTCUTS, 0,
+                                 physicsClientId=self.pb_connection)
+        configureDebugVisualizer(COV_ENABLE_GUI, 0,
+                                 physicsClientId=self.pb_connection)
         camera_reset(self.pb_connection)
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
 
         self.renderer = None
         if render_mode != "human":
-           self.renderer = Renderer(self.render_mode, self._render_frame)
+            self.renderer = Renderer(self.render_mode, self._render_frame)
 
-        self.ai_bot = create_bot(
-            self.pb_objects["player2_arm1"],
-            self.pb_objects["player2_arm2"],
-            self.pb_objects["ball"],
+        assert reward_function is not None, "No reward function passed"
+        self.reward_function = reward_function
+
+        self.ai_bot = ai_function(
+            self.pb_objects,
             self.pb_connection
-        ) if enable_ai else None
+        ) if ai_function else None
 
     def _render_frame(self):
         return getCameraImage(
@@ -94,7 +113,8 @@ class KickerEnv(gym.Env):
             physicsClientId=self.pb_connection,
         )[2]
 
-    def render(self, mode="human") -> Optional[Union[RenderFrame, List[RenderFrame]]]:
+    def render(self, mode="human") -> Optional[
+        Union[RenderFrame, List[RenderFrame]]]:
         return self.renderer.get_renders()
 
     def _get_obs(self):
@@ -182,9 +202,10 @@ class KickerEnv(gym.Env):
             velocityGains=(arm2_rotator_k, arm2_slider_k),
             physicsClientId=self.pb_connection
         )
-
-        done = bool(is_done(self.pb_objects["ball"], self.pb_connection))
-        reward = simple_reward(self.pb_objects["ball"], self.pb_connection)
+        ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
+                                                 self.pb_connection)[0]
+        done = bool(is_done(ball_cds))
+        reward = self.reward_function(ball_cds)
         obs = self._get_obs()
 
         if self.ai_bot:

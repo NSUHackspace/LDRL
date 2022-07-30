@@ -1,6 +1,6 @@
 from pybullet import *
 import pybullet as pb
-from typing import Iterable
+from typing import Iterable, Tuple
 
 # Variables dependent on urdf models. Set globally for simplicity
 __rotator_id = 1
@@ -32,19 +32,16 @@ def _reset_arm(arm_id: int, physicsClientId: int = 0):
     )
 
 
-def is_done(ball_id: int, physicsClientId: int = 0) -> int:
+def is_done(ball_cds: Tuple[float, float, float]) -> int:
     """
     Checks if game is done.
 
-    :param ball_id: ball unique id
-    :param physicsClientId: client id for multiple connections
+    :param ball_cds: coordinates of the ball
     :return: > 1 if player 1 wins <br>
     > -1 if player 2 wins <br>
     > 0 if the ball went out of the playing area
     """
-    x, y, z = \
-        getBasePositionAndOrientation(ball_id, physicsClientId=physicsClientId)[
-            0]
+    x, y, z = ball_cds
     if y > 13 and z <= 5 and -3 < x < 3:
         return 1
     if y < -13 or z < 0 or (y > 13 and z > 5):
@@ -52,7 +49,7 @@ def is_done(ball_id: int, physicsClientId: int = 0) -> int:
     return 0
 
 
-def simple_reward(ball_id: int, physicsClientId: int = 0):
+def simple_reward(ball_cds: Tuple[float, float, float], *args, **kwargs) -> float:
     """
     Some simple reward function realization.
     The idea is the more the function:
@@ -62,12 +59,13 @@ def simple_reward(ball_id: int, physicsClientId: int = 0):
     * the ball is on the board
     * The value of the function becomes negative when player1 loses or the ball falls out of the playing area
 
-    :param ball_id: ball unique id
-    :param physicsClientId: client id for multiple connections
+    :param ball_cds: coordinats of the ball
+    :param *args: for compability
+    :param **kwargs: for compability
     :return: reward value
     """
 
-    def minus_mult(a, b):
+    def minus_mult(a: float, b: float) -> float:
         """
         Function that multiplies a and b, but changes sign of the result to minus if a < 0 and b < 0
 
@@ -77,9 +75,7 @@ def simple_reward(ball_id: int, physicsClientId: int = 0):
         """
         return a * b * -1 ** (a < 0 and b < 0)
 
-    x, y, z = \
-        getBasePositionAndOrientation(ball_id, physicsClientId=physicsClientId)[
-            0]
+    x, y, z = ball_cds
     return minus_mult((9 - x ** 2) + minus_mult((90 - x ** 2), (6 - z)),
                       (y + 13))
 
