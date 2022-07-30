@@ -18,8 +18,10 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
     p1ymi, p1yma = p1_a[1] - 3, p1_a[1] + .3
     p2ymi, p2yma = p1_b[1] - 4, p1_b[1] + 4
     force = 5000
+    tick_count = 20
 
     def f():
+        nonlocal tick_count
         x, y, z = \
         getBasePositionAndOrientation(ball_id, physicsClientId=physicsClientId)[
             0]
@@ -36,10 +38,10 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 arm1_id,
                 rotator_id,
                 pb.TORQUE_CONTROL,
-                force=-force / 2,
+                force=-force,
                 physicsClientId=physicsClientId
             )
-        if p2ymi <= y <= p1_b[1] and z < 3:
+        if p2ymi <= y <= p1_b[1] and z < 3 and tick_count < 100:
             setJointMotorControl2(
                 arm2_id,
                 rotator_id,
@@ -47,7 +49,8 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 force=force,
                 physicsClientId=physicsClientId
             )
-        elif p1_b[1] < y <= p2yma and z < 3:
+            tick_count += 1
+        elif p1_b[1] < y <= p2yma and z < 3 and tick_count < 100:
             setJointMotorControl2(
                 arm2_id,
                 rotator_id,
@@ -55,7 +58,9 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 force=-force,
                 physicsClientId=physicsClientId
             )
+            tick_count += 1
         else:
+            tick_count = 0
             setJointMotorControl2(
                 arm2_id,
                 rotator_id,
@@ -64,6 +69,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 force=force/2,
                 physicsClientId=physicsClientId
             )
+        # sliders
         if x > p2_b[0]:
             setJointMotorControl2(
                 arm2_id,
