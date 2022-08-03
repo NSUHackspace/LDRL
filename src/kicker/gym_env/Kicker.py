@@ -2,11 +2,15 @@ import gym
 from gym import spaces
 from gym.core import ObsType, ActType, RenderFrame
 import numpy as np
-from src.scene.kicker import create_scene
-from src.utils.scene_functions import *
+from src.kicker.scene.kicker import create_scene
+from src.kicker.reset_functions import camera_reset, scene_reset
+from src.kicker.is_done_functions import is_done
+from src.kicker.reward_functions import advanced_reward_function
+import pybullet as pb
+from pybullet import *
 from typing import Tuple, Union, Optional, List, Callable, Dict
 from gym.utils.renderer import Renderer
-from src.ai.firstSimple import create_bot
+from src.kicker.ai import simple_bot
 
 # types for typing
 physicsClientId = int
@@ -20,9 +24,9 @@ class KickerEnv(gym.Env):
                  render_mode: str = 'human',
                  render_resolution: Tuple[int, int] = (1024, 800),
                  ai_function: Optional[Callable[
-                     [Dict[str, int], physicsClientId], Callable]] = create_bot,
+                     [Dict[str, int], physicsClientId], Callable]] = simple_bot,
                  reward_function: Callable[
-                     [Tuple[int, int, int], physicsClientId], int] = simple_reward,
+                     [Tuple[int, int, int], physicsClientId], int] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
                  ):
         """
@@ -205,7 +209,7 @@ class KickerEnv(gym.Env):
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
                                                  self.pb_connection)[0]
         done = bool(is_done(ball_cds))
-        reward = self.reward_function(ball_cds)
+        reward = self.reward_function(ball_cds, self.pb_connection)
         obs = self._get_obs()
 
         if self.ai_bot:

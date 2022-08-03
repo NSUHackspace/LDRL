@@ -1,12 +1,15 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name='Kicker',
+    name='Kicker-in-the-Gym',
     version='',
-    packages=[''],
+    package_dir={'kicker': 'src/kicker'},
+    packages=find_packages("./src", include=['kicker', 'kicker.*']),
+    package_data={'kicker': ['assets/*.urdf']},
     url='',
     license='',
     author='LDRL',
     author_email='',
-    description=''
+    description='',
+    include_package_data=True
 )

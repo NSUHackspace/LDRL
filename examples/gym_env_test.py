@@ -1,8 +1,6 @@
-import time
-
-from src.gym_envs.Kicker import KickerEnv
+from src.kicker.gym_env import KickerEnv
 from pybullet import getKeyboardEvents
-from src.utils.scene_functions import camera_reset
+from src.kicker.reset_functions import camera_reset
 
 
 env = KickerEnv()

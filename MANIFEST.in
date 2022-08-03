@@ -1,0 +1,1 @@
+recursive-include src/kicker/assets *.urdf

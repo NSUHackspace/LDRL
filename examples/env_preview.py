@@ -1,9 +1,12 @@
 import time
 
-from utils.keyboard_binder import bind_arm, update_arms
-from scene.kicker import create_scene
-from utils.scene_functions import *
-from ai.firstSimple import create_bot
+from src.kicker.utils.keyboard_binder import bind_arm, update_arms
+from src.kicker.scene import create_scene
+from src.kicker.reset_functions import *
+from src.kicker.ai import simple_bot
+import pybullet as pb
+from pybullet import *
+
 
 # initialize client
 pb_client = pb.connect(pb.GUI)
@@ -33,7 +36,7 @@ KEY_R = ord('r')
 KEY_C = ord('c')
 
 
-bot_f = create_bot(objects)
+bot_f = simple_bot(objects)
 
 while True:
 

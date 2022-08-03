@@ -95,13 +95,22 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 physicsClientId=physicsClientId
             )
         if x > p2_a[0]:
-            setJointMotorControl2(
-                arm1_id,
-                slider_id,
-                pb.POSITION_CONTROL,
-                targetPosition=p2_a[0] - x,
-                physicsClientId=physicsClientId
-            )
+            if p1ymi <= y <= p1yma:
+                setJointMotorControl2(
+                    arm1_id,
+                    slider_id,
+                    pb.POSITION_CONTROL,
+                    targetPosition=p2_a[0] - x,
+                    physicsClientId=physicsClientId
+                )
+            else:
+                setJointMotorControl2(
+                    arm1_id,
+                    slider_id,
+                    pb.POSITION_CONTROL,
+                    targetPosition=p2_a[0] - x,
+                    physicsClientId=physicsClientId
+                )
         elif x < p3_a[0]:
             setJointMotorControl2(
                 arm1_id,
