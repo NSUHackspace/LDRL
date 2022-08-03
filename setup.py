@@ -11,5 +11,5 @@ setup(
     author='LDRL',
     author_email='',
     description='',
-    include_package_data=True
+    include_package_data=True,
 )

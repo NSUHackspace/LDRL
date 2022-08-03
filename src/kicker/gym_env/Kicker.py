@@ -2,15 +2,15 @@ import gym
 from gym import spaces
 from gym.core import ObsType, ActType, RenderFrame
 import numpy as np
-from src.kicker.scene.kicker import create_scene
-from src.kicker.reset_functions import camera_reset, scene_reset
-from src.kicker.is_done_functions import is_done
-from src.kicker.reward_functions import advanced_reward_function
+from ..scene.kicker import create_scene
+from ..reset_functions import camera_reset, scene_reset
+from ..is_done_functions import is_done
+from ..reward_functions import advanced_reward_function
 import pybullet as pb
 from pybullet import *
 from typing import Tuple, Union, Optional, List, Callable, Dict
 from gym.utils.renderer import Renderer
-from src.kicker.ai import simple_bot
+from ..ai import simple_bot
 
 # types for typing
 physicsClientId = int

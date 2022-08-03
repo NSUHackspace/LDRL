@@ -1,9 +1,9 @@
 import time
 
-from src.kicker.utils.keyboard_binder import bind_arm, update_arms
-from src.kicker.scene import create_scene
-from src.kicker.reset_functions import *
-from src.kicker.ai import simple_bot
+from kicker.utils.keyboard_binder import bind_arm, update_arms
+from kicker.scene import create_scene
+from kicker.reset_functions import *
+from kicker.ai import simple_bot
 import pybullet as pb
 from pybullet import *
 
