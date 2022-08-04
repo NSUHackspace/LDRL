@@ -99,8 +99,8 @@ class KickerEnv(gym.Env):
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
 
         self.renderer = None
-        if render_mode != "human":
-            self.renderer = Renderer(self.render_mode, self._render_frame)
+        # if render_mode != "human":
+        self.renderer = Renderer(self.render_mode, self._render_frame)
 
         assert reward_function is not None, "No reward function passed"
         self.reward_function = reward_function
@@ -110,12 +110,14 @@ class KickerEnv(gym.Env):
             self.pb_connection
         ) if ai_function else None
 
-    def _render_frame(self):
-        return getCameraImage(
-            self.camera_width,
-            self.camera_height,
-            physicsClientId=self.pb_connection,
-        )[2]
+    def _render_frame(self, mode: str):
+        stepSimulation(self.pb_connection)
+        if self.render_mode == "rgba_array":
+            return getCameraImage(
+                self.camera_width,
+                self.camera_height,
+                physicsClientId=self.pb_connection,
+            )[2]
 
     def render(self, mode="human") -> Optional[
         Union[RenderFrame, List[RenderFrame]]]:
@@ -170,6 +172,8 @@ class KickerEnv(gym.Env):
                         self.pb_objects["player1_arm2"],
                     ),
                     self.pb_connection)
+        self.renderer.reset()
+        self.renderer.render_step()
         return self._get_obs()
 
     def step(
@@ -213,9 +217,11 @@ class KickerEnv(gym.Env):
         obs = self._get_obs()
 
         if self.ai_bot:
-            self.ai_bot()
+            self.ai_bot(ball_cds)
 
-        stepSimulation(self.pb_connection)
+        # stepSimulation(self.pb_connection)
+        self.renderer.render_step()
+
         if self.renderer:
             self.renderer.render_step()
 

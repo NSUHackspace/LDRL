@@ -1,7 +1,6 @@
-from pybullet import getLinkStates, getBasePositionAndOrientation, \
-    setJointMotorControl2
+from pybullet import getLinkStates, setJointMotorControl2
 import pybullet as pb
-from typing import Dict
+from typing import Dict, Tuple
 
 
 def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
@@ -20,11 +19,9 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
     force = 5000
     tick_count = 20
 
-    def f():
+    def f(crds: Tuple[float, float, float]):
         nonlocal tick_count
-        x, y, z = \
-        getBasePositionAndOrientation(ball_id, physicsClientId=physicsClientId)[
-            0]
+        x, y, z = crds
         if p1ymi <= y <= p1yma and z < 3:
             setJointMotorControl2(
                 arm1_id,
@@ -66,7 +63,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 rotator_id,
                 pb.POSITION_CONTROL,
                 targetPosition=0,
-                force=force/2,
+                force=force / 10,
                 physicsClientId=physicsClientId
             )
         # sliders
