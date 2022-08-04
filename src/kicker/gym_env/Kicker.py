@@ -95,7 +95,16 @@ class KickerEnv(gym.Env):
                                  physicsClientId=self.pb_connection)
         configureDebugVisualizer(COV_ENABLE_GUI, 0,
                                  physicsClientId=self.pb_connection)
+
+        self.viewMatrix = computeViewMatrixFromYawPitchRoll(
+            cameraDistance=20,
+            cameraYaw=90,
+            cameraPitch=-89.99999,
+            cameraTargetPosition=(0, 0, 0),
+            physicsClientId=physicsClientId
+        )
         camera_reset(self.pb_connection)
+
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
 
         self.renderer = None
@@ -116,8 +125,7 @@ class KickerEnv(gym.Env):
             return getCameraImage(
                 self.camera_width,
                 self.camera_height,
-                viewMatrix=(0.642787516117096, -0.4393851161003113, 0.6275069713592529, 0.0, 0.766044557094574, 0.36868777871131897, -0.5265407562255859, 0.0, -0.0, 0.8191521167755127, 0.5735764503479004, 0.0, 2.384185791015625e-07, 2.384185791015625e-07, -5.000000476837158, 1.0),
-                projectionMatrix=(0.78125, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0000200271606445, -1.0, 0.0, 0.0, -0.02000020071864128, 0.0),
+                viewMatrix=self.viewMatrix,
                 physicsClientId=self.pb_connection,
             )[2]
 
