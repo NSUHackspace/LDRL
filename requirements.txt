@@ -1,4 +1,4 @@
 gym>=0.25.0
-numpy>=1.23.1
+numpy>=1.21.6
 pybullet>=3.2.5
 setuptools>=60.2.0
