@@ -97,12 +97,15 @@ class KickerEnv(gym.Env):
                                  physicsClientId=self.pb_connection)
 
         self.viewMatrix = computeViewMatrixFromYawPitchRoll(
-            cameraDistance=20,
-            cameraYaw=90,
-            cameraPitch=-89.99999,
-            cameraTargetPosition=(0, 0, 0),
-            physicsClientId=physicsClientId
+            cameraTargetPosition=[0, 0, 0],
+            distance=20.,
+            yaw=90.,
+            pitch=-89.99999,
+            roll=0.,
+            upAxisIndex=2,
+            physicsClientId=self.pb_connection
         )
+        print(self.viewMatrix)
         camera_reset(self.pb_connection)
 
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
