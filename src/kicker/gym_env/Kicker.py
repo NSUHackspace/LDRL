@@ -112,7 +112,7 @@ class KickerEnv(gym.Env):
 
     def _render_frame(self, mode: str):
         stepSimulation(self.pb_connection)
-        if self.render_mode == "rgba_array":
+        if mode == "rgba_array":
             return getCameraImage(
                 self.camera_width,
                 self.camera_height,
