@@ -97,15 +97,21 @@ class KickerEnv(gym.Env):
                                  physicsClientId=self.pb_connection)
 
         self.viewMatrix = computeViewMatrixFromYawPitchRoll(
-            cameraTargetPosition=[0, 0, 0],
-            distance=20.,
+            cameraTargetPosition=(0, 0, 0),
+            distance=20,
             yaw=90.,
-            pitch=-89.99999,
+            pitch=-89.999999,
             roll=0.,
             upAxisIndex=2,
             physicsClientId=self.pb_connection
         )
-        print(self.viewMatrix)
+        self.projectionMatrix = computeProjectionMatrixFOV(
+            90,
+            render_resolution[0] / render_resolution[1],
+            0,
+            20
+        )
+
         camera_reset(self.pb_connection)
 
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
@@ -129,6 +135,7 @@ class KickerEnv(gym.Env):
                 self.camera_width,
                 self.camera_height,
                 viewMatrix=self.viewMatrix,
+                projectionMatrix=self.projectionMatrix,
                 physicsClientId=self.pb_connection,
             )[2]
 
