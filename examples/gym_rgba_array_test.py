@@ -4,6 +4,7 @@ from numpngw import write_apng
 import numpy as np
 
 
+# resolution "parameter"
 resolution = (600, 400)
 
 # creating Gym environment
