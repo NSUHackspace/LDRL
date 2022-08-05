@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='kicker',
+    # name='Kicker-in-the-Gym',
+    name="kicker",
     version='0.0.3',
     package_dir={'kicker': 'src/kicker'},
     # packages=find_packages("./src", include=['kicker', 'kicker.*']),
-    packages=["kicker", "kicker.ai", "kicker.gym_env", "kicker.is_done_functions", "kicker.reset_functions", "kicker.reward_functions", "kicker.scene", "kicker.utils"],
+    packages=["kicker", "kicker.gym_env"],
     package_data={'kicker': ['assets/*.urdf']},
     url='',
     license='',
