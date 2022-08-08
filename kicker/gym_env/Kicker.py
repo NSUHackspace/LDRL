@@ -14,6 +14,8 @@ from ..ai import simple_bot
 
 # types for typing
 physicsClientId = int
+ball_coordinates = Tuple[float, float, float]
+object_list = Dict[str, int]
 
 
 class KickerEnv(gym.Env):
@@ -24,9 +26,11 @@ class KickerEnv(gym.Env):
                  render_mode: str = 'human',
                  render_resolution: Tuple[int, int] = (1024, 800),
                  ai_function: Optional[Callable[
-                     [Dict[str, int], physicsClientId], Callable]] = simple_bot,
+                     [object_list, physicsClientId], Callable[
+                         [ball_coordinates], None]]] = simple_bot,
                  reward_function: Callable[
-                     [Tuple[float, float, float], physicsClientId], float] = advanced_reward_function,
+                     [ball_coordinates,
+                      physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
                  max_steps: Optional[int] = None
                  ):
@@ -99,7 +103,6 @@ class KickerEnv(gym.Env):
         configureDebugVisualizer(COV_ENABLE_GUI, 0,
                                  physicsClientId=self.pb_connection)
 
-        # matrix for screenshots
         self.viewMatrix = computeViewMatrixFromYawPitchRoll(
             cameraTargetPosition=(0, 0, 0),
             distance=20,
@@ -109,8 +112,6 @@ class KickerEnv(gym.Env):
             upAxisIndex=2,
             physicsClientId=self.pb_connection
         )
-
-        # for screenshots
         self.projectionMatrix = computeProjectionMatrixFOV(
             90,
             render_resolution[0] / render_resolution[1],
