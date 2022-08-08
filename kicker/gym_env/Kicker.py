@@ -1,6 +1,5 @@
 import gym
 from gym import spaces
-from gym.core import ObsType, ActType, RenderFrame
 import numpy as np
 from ..scene.kicker import create_scene
 from ..reset_functions import camera_reset, scene_reset
@@ -8,7 +7,7 @@ from ..is_done_functions import is_done
 from ..reward_functions import advanced_reward_function
 import pybullet as pb
 from pybullet import *
-from typing import Tuple, Union, Optional, List, Callable, Dict
+from typing import Tuple, Optional, Callable, Dict
 from gym.utils.renderer import Renderer
 from ..ai import simple_bot
 
@@ -54,17 +53,31 @@ class KickerEnv(gym.Env):
             "ball": spaces.Box(-20, 20, (3,)),
             "player1_arms": spaces.Tuple((
                 # arm 1
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3])),
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
                 # arm 2
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3]))
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
             )),
             "player2_arms": spaces.Tuple((
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3])),
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3]))
+                # arm 1
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
+                # arm 2
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
             )),
         })
 
@@ -103,6 +116,7 @@ class KickerEnv(gym.Env):
         configureDebugVisualizer(COV_ENABLE_GUI, 0,
                                  physicsClientId=self.pb_connection)
 
+        # matrix for screenshots
         self.viewMatrix = computeViewMatrixFromYawPitchRoll(
             cameraTargetPosition=(0, 0, 0),
             distance=20,
@@ -112,6 +126,8 @@ class KickerEnv(gym.Env):
             upAxisIndex=2,
             physicsClientId=self.pb_connection
         )
+
+        # for screenshots
         self.projectionMatrix = computeProjectionMatrixFOV(
             90,
             render_resolution[0] / render_resolution[1],
@@ -146,8 +162,7 @@ class KickerEnv(gym.Env):
                 physicsClientId=self.pb_connection,
             )[2]
 
-    def render(self, mode="human") -> Optional[
-        Union[RenderFrame, List[RenderFrame]]]:
+    def render(self, mode="human"):
         return self.renderer.get_renders()
 
     def _get_obs(self):
@@ -162,24 +177,24 @@ class KickerEnv(gym.Env):
                 physicsClientId=self.pb_connection
             )[0],
             "player1_arms": (
-                (
-                    p1a1[0][0],
-                    p1a1[1][0],
-                ),
-                (
-                    p1a2[0][0],
-                    p1a2[1][0],
-                ),
+                ({
+                    "rotator": p1a1[0][0],
+                    "slider": p1a1[1][0],
+                }),
+                ({
+                    "rotator": p1a2[0][0],
+                    "slider": p1a2[1][0],
+                }),
             ),
             "player2_arms": (
-                (
-                    p2a1[0][0],
-                    p2a1[1][0],
-                ),
-                (
-                    p2a2[0][0],
-                    p2a2[1][0],
-                ),
+                ({
+                    "rotator": p2a1[0][0],
+                    "slider": p2a1[1][0],
+                }),
+                ({
+                    "rotator": p2a2[0][0],
+                    "slider": p2a2[1][0],
+                }),
             )
         }
 
@@ -189,7 +204,7 @@ class KickerEnv(gym.Env):
             seed: Optional[int] = None,
             return_info: bool = False,
             options: Optional[dict] = None,
-    ) -> Union[ObsType, Tuple[ObsType, dict]]:
+    ):
         super().reset(seed=seed)
         scene_reset(self.pb_zero_state,
                     (
@@ -205,11 +220,8 @@ class KickerEnv(gym.Env):
         return self._get_obs()
 
     def step(
-            self, action: ActType
-    ) -> Union[
-        Tuple[ObsType, float, bool, bool, dict], Tuple[
-            ObsType, float, bool, dict]
-    ]:
+            self, action
+    ):
         self.step_cnt += 1
         rotator_id, slider_id = 1, 2
         arm1_rotator_velocity = action[0]["rotator"]["velocity"]
