@@ -1,6 +1,5 @@
 import gym
 from gym import spaces
-from gym.core import ObsType, ActType, RenderFrame
 import numpy as np
 from ..scene.kicker import create_scene
 from ..reset_functions import camera_reset, scene_reset
@@ -8,7 +7,7 @@ from ..is_done_functions import is_done
 from ..reward_functions import advanced_reward_function
 import pybullet as pb
 from pybullet import *
-from typing import Tuple, Union, Optional, List, Callable, Dict
+from typing import Tuple, Optional, Callable, Dict
 from gym.utils.renderer import Renderer
 from ..ai import simple_bot
 
@@ -160,8 +159,7 @@ class KickerEnv(gym.Env):
                 physicsClientId=self.pb_connection,
             )[2]
 
-    def render(self, mode="human") -> Optional[
-        Union[RenderFrame, List[RenderFrame]]]:
+    def render(self, mode="human"):
         return self.renderer.get_renders()
 
     def _get_obs(self):
@@ -203,7 +201,7 @@ class KickerEnv(gym.Env):
             seed: Optional[int] = None,
             return_info: bool = False,
             options: Optional[dict] = None,
-    ) -> Union[ObsType, Tuple[ObsType, dict]]:
+    ):
         super().reset(seed=seed)
         scene_reset(self.pb_zero_state,
                     (
@@ -219,11 +217,8 @@ class KickerEnv(gym.Env):
         return self._get_obs()
 
     def step(
-            self, action: ActType
-    ) -> Union[
-        Tuple[ObsType, float, bool, bool, dict], Tuple[
-            ObsType, float, bool, dict]
-    ]:
+            self, action
+    ):
         self.step_cnt += 1
         rotator_id, slider_id = 1, 2
         arm1_rotator_velocity = action[0]["rotator"]["velocity"]
