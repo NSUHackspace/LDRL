@@ -28,6 +28,7 @@ class KickerEnv(gym.Env):
                  reward_function: Callable[
                      [Tuple[float, float, float], physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
+                 max_steps: Optional[int] = None
                  ):
         """
 
@@ -42,6 +43,8 @@ class KickerEnv(gym.Env):
 
         self.render_mode = render_mode if render_mode in self.metadata[
             'render.modes'] else 'human'
+
+        self.max_steps = max_steps
 
         self.observation_space = spaces.Dict({
             "ball": spaces.Box(-20, 20, (3,)),
@@ -197,6 +200,7 @@ class KickerEnv(gym.Env):
                     self.pb_connection)
         self.renderer.reset()
         self.renderer.render_step()
+        self.step_cnt = 0
         return self._get_obs()
 
     def step(
@@ -205,6 +209,7 @@ class KickerEnv(gym.Env):
         Tuple[ObsType, float, bool, bool, dict], Tuple[
             ObsType, float, bool, dict]
     ]:
+        self.step_cnt += 1
         rotator_id, slider_id = 1, 2
         arm1_rotator_velocity = action[0]["rotator"]["velocity"]
         arm1_rotator_k = action[0]["rotator"]["k"]
@@ -236,6 +241,9 @@ class KickerEnv(gym.Env):
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
                                                  self.pb_connection)[0]
         done = bool(is_done(ball_cds))
+        if self.max_steps is not None and self.step_cnt > self.max_steps:
+            done = True
+
         reward = self.reward_function(ball_cds, self.pb_connection)
         obs = self._get_obs()
 

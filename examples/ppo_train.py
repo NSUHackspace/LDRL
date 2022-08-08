@@ -38,7 +38,7 @@ def main():
     # creating Gym environment
     env = FlattenAction(
         FlattenObservation(
-            KickerEnv(bullet_connection_type=pb.GUI, ai_function=None)
+            KickerEnv(bullet_connection_type=pb.GUI, ai_function=None, max_steps=10000)
         )
     )
 
