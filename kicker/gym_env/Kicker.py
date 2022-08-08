@@ -7,8 +7,7 @@ from ..is_done_functions import is_done
 from ..reward_functions import advanced_reward_function
 import pybullet as pb
 from pybullet import *
-from typing import Tuple, Optional, Callable, Dict
-from gym.utils.renderer import Renderer
+from typing import Tuple, Union, Optional, List, Callable, Dict
 from ..ai import simple_bot
 
 # types for typing
@@ -86,23 +85,23 @@ class KickerEnv(gym.Env):
             spaces.Dict({
                 # "rotator": spaces.Discrete(3, start=-1),  # direction of force application
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-20, 20),  # velocity
-                    "k": spaces.Box(2, 2),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20, (1,)),  # velocity
+                    "k": spaces.Box(2, 2, (1,)),  # velocity gain(?)
                 }),
                 # "slider": spaces.Box(-3, 3),  # "middle player" position
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-20, 20),  # velocity
-                    "k": spaces.Box(2, 2),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20, (1,)),  # velocity
+                    "k": spaces.Box(2, 2, (1,)),  # velocity gain(?)
                 }),
             }),
             spaces.Dict({
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-20, 20),  # velocity
-                    "k": spaces.Box(2, 2),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20, (1,)),  # velocity
+                    "k": spaces.Box(2, 2, (1,)),  # velocity gain(?)
                 }),
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-20, 20),  # velocity
-                    "k": spaces.Box(2, 2),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20, (1,)),  # velocity
+                    "k": spaces.Box(2, 2, (1,)),  # velocity gain(?)
                 }),
             }),
         ))
@@ -139,10 +138,6 @@ class KickerEnv(gym.Env):
 
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
 
-        self.renderer = None
-        # if render_mode != "human":
-        self.renderer = Renderer(self.render_mode, self._render_frame)
-
         assert reward_function is not None, "No reward function passed"
         self.reward_function = reward_function
 
@@ -151,8 +146,7 @@ class KickerEnv(gym.Env):
             self.pb_connection
         ) if ai_function else None
 
-    def _render_frame(self, mode: str):
-        stepSimulation(self.pb_connection)
+    def render(self, mode: str):
         if mode == "rgba_array":
             return getCameraImage(
                 self.camera_width,
@@ -161,9 +155,6 @@ class KickerEnv(gym.Env):
                 projectionMatrix=self.projectionMatrix,
                 physicsClientId=self.pb_connection,
             )[2]
-
-    def render(self, mode="human"):
-        return self.renderer.get_renders()
 
     def _get_obs(self):
         # rotator_id, slider_id = 1, 2
@@ -205,7 +196,6 @@ class KickerEnv(gym.Env):
             return_info: bool = False,
             options: Optional[dict] = None,
     ):
-        super().reset(seed=seed)
         scene_reset(self.pb_zero_state,
                     (
                         self.pb_objects["player2_arm2"],
@@ -214,14 +204,10 @@ class KickerEnv(gym.Env):
                         self.pb_objects["player1_arm2"],
                     ),
                     self.pb_connection)
-        self.renderer.reset()
-        self.renderer.render_step()
         self.step_cnt = 0
         return self._get_obs()
 
-    def step(
-            self, action
-    ):
+    def step(self, action):
         self.step_cnt += 1
         rotator_id, slider_id = 1, 2
         arm1_rotator_velocity = action[0]["rotator"]["velocity"]
@@ -251,6 +237,9 @@ class KickerEnv(gym.Env):
             velocityGains=(arm2_rotator_k, arm2_slider_k),
             physicsClientId=self.pb_connection
         )
+
+        stepSimulation(self.pb_connection)
+
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
                                                  self.pb_connection)[0]
         done = bool(is_done(ball_cds))
@@ -262,12 +251,6 @@ class KickerEnv(gym.Env):
 
         if self.ai_bot:
             self.ai_bot(ball_cds)
-
-        # stepSimulation(self.pb_connection)
-        self.renderer.render_step()
-
-        if self.renderer:
-            self.renderer.render_step()
 
         return obs, reward, done, {}
 
