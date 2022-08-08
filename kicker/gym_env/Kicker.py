@@ -155,6 +155,8 @@ class KickerEnv(gym.Env):
                 projectionMatrix=self.projectionMatrix,
                 physicsClientId=self.pb_connection,
             )[2]
+        else:
+            super().render(mode=mode)
 
     def _get_obs(self):
         # rotator_id, slider_id = 1, 2
