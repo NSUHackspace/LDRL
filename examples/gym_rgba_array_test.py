@@ -1,4 +1,4 @@
-from src.kicker.gym_env import KickerEnv
+from kicker.gym_env import KickerEnv
 import pybullet as pb
 from numpngw import write_apng
 import numpy as np
