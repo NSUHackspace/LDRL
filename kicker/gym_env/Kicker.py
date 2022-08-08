@@ -54,17 +54,31 @@ class KickerEnv(gym.Env):
             "ball": spaces.Box(-20, 20, (3,)),
             "player1_arms": spaces.Tuple((
                 # arm 1
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3])),
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
                 # arm 2
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3]))
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
             )),
             "player2_arms": spaces.Tuple((
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3])),
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3]))
+                # arm 1
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
+                # arm 2
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
             )),
         })
 
@@ -103,6 +117,7 @@ class KickerEnv(gym.Env):
         configureDebugVisualizer(COV_ENABLE_GUI, 0,
                                  physicsClientId=self.pb_connection)
 
+        # matrix for screenshots
         self.viewMatrix = computeViewMatrixFromYawPitchRoll(
             cameraTargetPosition=(0, 0, 0),
             distance=20,
@@ -112,6 +127,8 @@ class KickerEnv(gym.Env):
             upAxisIndex=2,
             physicsClientId=self.pb_connection
         )
+
+        # for screenshots
         self.projectionMatrix = computeProjectionMatrixFOV(
             90,
             render_resolution[0] / render_resolution[1],
@@ -162,24 +179,24 @@ class KickerEnv(gym.Env):
                 physicsClientId=self.pb_connection
             )[0],
             "player1_arms": (
-                (
-                    p1a1[0][0],
-                    p1a1[1][0],
-                ),
-                (
-                    p1a2[0][0],
-                    p1a2[1][0],
-                ),
+                ({
+                    "rotator": p1a1[0][0],
+                    "slider": p1a1[1][0],
+                }),
+                ({
+                    "rotator": p1a2[0][0],
+                    "slider": p1a2[1][0],
+                }),
             ),
             "player2_arms": (
-                (
-                    p2a1[0][0],
-                    p2a1[1][0],
-                ),
-                (
-                    p2a2[0][0],
-                    p2a2[1][0],
-                ),
+                ({
+                    "rotator": p2a1[0][0],
+                    "slider": p2a1[1][0],
+                }),
+                ({
+                    "rotator": p2a2[0][0],
+                    "slider": p2a2[1][0],
+                }),
             )
         }
 
