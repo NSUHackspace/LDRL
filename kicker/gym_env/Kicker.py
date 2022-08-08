@@ -31,9 +31,9 @@ class KickerEnv(gym.Env):
                  ):
         """
 
-        :param bullet_connection_type: connection type from pybullet(Direct, GUI?)
-        :param render_mode: "human" for gui and rgba_array for pixel array
-        :param render_resolution:
+        :param bullet_connection_type: connection type from pybullet(Direct, GUI?) <br>
+        :param render_mode: use "rgba_array" for capturing images every step. You can get array of images using the .render() method
+        :param render_resolution: tuple of width and height of window or image(in "rgba_array" mode)
         :param ai_function: <b> can be None</b> function that accepts dictionary of objects (and physicsClientId) and return function that control player on call
         :param reward_function: Function that accepts: (Arm1 unique id, Arm2 unique id, ball unique id, physicsClientId)
         :param player: Which player will be controlled by env (Unused!)
@@ -96,6 +96,7 @@ class KickerEnv(gym.Env):
         configureDebugVisualizer(COV_ENABLE_GUI, 0,
                                  physicsClientId=self.pb_connection)
 
+        # matrix for screenshots
         self.viewMatrix = computeViewMatrixFromYawPitchRoll(
             cameraTargetPosition=(0, 0, 0),
             distance=20,
@@ -105,6 +106,8 @@ class KickerEnv(gym.Env):
             upAxisIndex=2,
             physicsClientId=self.pb_connection
         )
+
+        # for screenshots
         self.projectionMatrix = computeProjectionMatrixFOV(
             90,
             render_resolution[0] / render_resolution[1],
