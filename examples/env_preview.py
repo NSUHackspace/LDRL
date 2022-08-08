@@ -40,6 +40,9 @@ bot_f = simple_bot(objects)
 
 while True:
 
+    ball_crds = getBasePositionAndOrientation(
+                objects['ball'],
+            )[0]
     # get all pressed keys from previous call
     keys = getKeyboardEvents()
     if KEY_Q in keys:
@@ -54,7 +57,7 @@ while True:
         camera_reset(pb_client)
     # handle key press
     update_arms(keys)
-    bot_f()
+    bot_f(ball_crds)
     stepSimulation()
     time.sleep(1 / 240)
 
