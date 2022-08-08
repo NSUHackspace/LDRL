@@ -17,7 +17,7 @@ physicsClientId = int
 
 
 class KickerEnv(gym.Env):
-    metadata = {'render_modes': ['human', 'rgba_array']}
+    metadata = {'render.modes': ['human', 'rgba_array']}
 
     def __init__(self,
                  bullet_connection_type: int = pb.GUI,
@@ -28,6 +28,7 @@ class KickerEnv(gym.Env):
                  reward_function: Callable[
                      [Tuple[float, float, float], physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
+                 max_steps: Optional[int] = None
                  ):
         """
 
@@ -41,7 +42,9 @@ class KickerEnv(gym.Env):
         self.camera_width, self.camera_height = render_resolution
 
         self.render_mode = render_mode if render_mode in self.metadata[
-            'render_modes'] else 'human'
+            'render.modes'] else 'human'
+
+        self.max_steps = max_steps
 
         self.observation_space = spaces.Dict({
             "ball": spaces.Box(-20, 20, (3,)),
@@ -66,23 +69,23 @@ class KickerEnv(gym.Env):
             spaces.Dict({
                 # "rotator": spaces.Discrete(3, start=-1),  # direction of force application
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
                 # "slider": spaces.Box(-3, 3),  # "middle player" position
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
             }),
             spaces.Dict({
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
             }),
         ))
@@ -197,6 +200,7 @@ class KickerEnv(gym.Env):
                     self.pb_connection)
         self.renderer.reset()
         self.renderer.render_step()
+        self.step_cnt = 0
         return self._get_obs()
 
     def step(
@@ -205,6 +209,7 @@ class KickerEnv(gym.Env):
         Tuple[ObsType, float, bool, bool, dict], Tuple[
             ObsType, float, bool, dict]
     ]:
+        self.step_cnt += 1
         rotator_id, slider_id = 1, 2
         arm1_rotator_velocity = action[0]["rotator"]["velocity"]
         arm1_rotator_k = action[0]["rotator"]["k"]
@@ -236,6 +241,9 @@ class KickerEnv(gym.Env):
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
                                                  self.pb_connection)[0]
         done = bool(is_done(ball_cds))
+        if self.max_steps is not None and self.step_cnt > self.max_steps:
+            done = True
+
         reward = self.reward_function(ball_cds, self.pb_connection)
         obs = self._get_obs()
 
