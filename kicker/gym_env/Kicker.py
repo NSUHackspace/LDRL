@@ -100,7 +100,6 @@ class KickerEnv(gym.Env):
         configureDebugVisualizer(COV_ENABLE_GUI, 0,
                                  physicsClientId=self.pb_connection)
 
-        # matrix for screenshots
         self.viewMatrix = computeViewMatrixFromYawPitchRoll(
             cameraTargetPosition=(0, 0, 0),
             distance=20,
@@ -110,8 +109,6 @@ class KickerEnv(gym.Env):
             upAxisIndex=2,
             physicsClientId=self.pb_connection
         )
-
-        # for screenshots
         self.projectionMatrix = computeProjectionMatrixFOV(
             90,
             render_resolution[0] / render_resolution[1],
