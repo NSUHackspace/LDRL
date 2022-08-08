@@ -17,7 +17,7 @@ physicsClientId = int
 
 
 class KickerEnv(gym.Env):
-    metadata = {'render_modes': ['human', 'rgba_array']}
+    metadata = {'render.modes': ['human', 'rgba_array']}
 
     def __init__(self,
                  bullet_connection_type: int = pb.GUI,
@@ -41,7 +41,7 @@ class KickerEnv(gym.Env):
         self.camera_width, self.camera_height = render_resolution
 
         self.render_mode = render_mode if render_mode in self.metadata[
-            'render_modes'] else 'human'
+            'render.modes'] else 'human'
 
         self.observation_space = spaces.Dict({
             "ball": spaces.Box(-20, 20, (3,)),
@@ -66,23 +66,23 @@ class KickerEnv(gym.Env):
             spaces.Dict({
                 # "rotator": spaces.Discrete(3, start=-1),  # direction of force application
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-10, 10),  # velocity
+                    "k": spaces.Box(1, 1),  # velocity gain(?)
                 }),
                 # "slider": spaces.Box(-3, 3),  # "middle player" position
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-10, 10),  # velocity
+                    "k": spaces.Box(1, 1),  # velocity gain(?)
                 }),
             }),
             spaces.Dict({
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-10, 10),  # velocity
+                    "k": spaces.Box(1, 1),  # velocity gain(?)
                 }),
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-30, 30),  # velocity
-                    "k": spaces.Box(-30, 30),  # velocity gain(?)
+                    "velocity": spaces.Box(-10, 10),  # velocity
+                    "k": spaces.Box(1, 1),  # velocity gain(?)
                 }),
             }),
         ))
