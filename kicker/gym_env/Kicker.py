@@ -26,7 +26,8 @@ class KickerEnv(gym.Env):
                  ai_function: Optional[Callable[
                      [Dict[str, int], physicsClientId], Callable]] = simple_bot,
                  reward_function: Callable[
-                     [Tuple[float, float, float], physicsClientId], float] = advanced_reward_function,
+                     [Tuple[float, float, float],
+                      physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
                  ):
         """
@@ -47,17 +48,31 @@ class KickerEnv(gym.Env):
             "ball": spaces.Box(-20, 20, (3,)),
             "player1_arms": spaces.Tuple((
                 # arm 1
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3])),
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
                 # arm 2
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3]))
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
             )),
             "player2_arms": spaces.Tuple((
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3])),
-                spaces.Box(np.array([-np.pi, -3]),
-                           np.array([np.pi, 3]))
+                # arm 1
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
+                # arm 2
+                spaces.Dict({
+                    "rotator": spaces.Box(np.array([-np.pi]),
+                                          np.array([np.pi])),
+                    "slider": spaces.Box(np.array([-3]), np.array([3]))
+                }),
             )),
         })
 
@@ -158,24 +173,24 @@ class KickerEnv(gym.Env):
                 physicsClientId=self.pb_connection
             )[0],
             "player1_arms": (
-                (
-                    p1a1[0][0],
-                    p1a1[1][0],
-                ),
-                (
-                    p1a2[0][0],
-                    p1a2[1][0],
-                ),
+                ({
+                    "rotator": p1a1[0][0],
+                    "slider": p1a1[1][0],
+                }),
+                ({
+                    "rotator": p1a2[0][0],
+                    "slider": p1a2[1][0],
+                }),
             ),
             "player2_arms": (
-                (
-                    p2a1[0][0],
-                    p2a1[1][0],
-                ),
-                (
-                    p2a2[0][0],
-                    p2a2[1][0],
-                ),
+                ({
+                    "rotator": p2a1[0][0],
+                    "slider": p2a1[1][0],
+                }),
+                ({
+                    "rotator": p2a2[0][0],
+                    "slider": p2a2[1][0],
+                }),
             )
         }
 
