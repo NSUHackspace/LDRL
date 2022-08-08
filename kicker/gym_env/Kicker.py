@@ -26,7 +26,7 @@ class KickerEnv(gym.Env):
                  ai_function: Optional[Callable[
                      [Dict[str, int], physicsClientId], Callable]] = simple_bot,
                  reward_function: Callable[
-                     [Tuple[int, int, int], physicsClientId], int] = advanced_reward_function,
+                     [Tuple[float, float, float], physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
                  ):
         """
