@@ -19,7 +19,7 @@ class FlattenAction(ActionWrapper):
         Args:
             env: The environment to apply the wrapper
         """
-        super().__init__(env, new_step_api=True)
+        super().__init__(env)
         self.action_space = spaces.flatten_space(env.action_space)
 
     def action(self, action):
