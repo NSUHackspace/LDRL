@@ -69,23 +69,23 @@ class KickerEnv(gym.Env):
             spaces.Dict({
                 # "rotator": spaces.Discrete(3, start=-1),  # direction of force application
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-10, 10),  # velocity
-                    "k": spaces.Box(1, 1),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
                 # "slider": spaces.Box(-3, 3),  # "middle player" position
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-10, 10),  # velocity
-                    "k": spaces.Box(1, 1),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
             }),
             spaces.Dict({
                 "rotator": spaces.Dict({
-                    "velocity": spaces.Box(-10, 10),  # velocity
-                    "k": spaces.Box(1, 1),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
                 "slider": spaces.Dict({
-                    "velocity": spaces.Box(-10, 10),  # velocity
-                    "k": spaces.Box(1, 1),  # velocity gain(?)
+                    "velocity": spaces.Box(-20, 20),  # velocity
+                    "k": spaces.Box(2, 2),  # velocity gain(?)
                 }),
             }),
         ))
