@@ -1,5 +1,5 @@
 from typing import Tuple
-
+from ..is_done_functions import is_done_by_coords
 
 def reward_function(ball_cds: Tuple[float, float, float], *args, **kwargs) -> float:
     """
@@ -31,3 +31,18 @@ def reward_function(ball_cds: Tuple[float, float, float], *args, **kwargs) -> fl
     return minus_mult((9 - x ** 2) + minus_mult((90 - x ** 2), (6 - z)),
                       (y + 13))
 
+
+def simple_reward(ball_cds: Tuple[float, float, float], *args, **kwargs) -> float:
+    """
+    Simplest reward function: just positive reward if agent win and negative if it lost
+
+    :param ball_cds: coordinats of the ball
+    :param *args: for compability
+    :param **kwargs: for compability
+    :return: reward value
+    """
+
+    if is_done_by_coords.is_done(ball_cds):
+        return is_done_by_coords.is_done(ball_cds) * 50
+    else:
+        return -0.5
