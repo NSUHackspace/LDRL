@@ -3,6 +3,7 @@ from gym import spaces
 import numpy as np
 from ..scene.kicker import create_scene
 from ..reset_functions import camera_reset, scene_reset
+from pybullet import resetDebugVisualizerCamera
 from ..is_done_functions import is_done
 from ..reward_functions import advanced_reward_function
 import pybullet as pb
@@ -30,7 +31,8 @@ class KickerEnv(gym.Env):
                      [ball_coordinates,
                       physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
-                 max_steps: Optional[int] = None
+                 max_steps: Optional[int] = None,
+                 ball_coords: Optional[int] = 2
                  ):
         """
 
@@ -48,8 +50,18 @@ class KickerEnv(gym.Env):
 
         self.max_steps = max_steps
 
+        self.ball_coords = ball_coords
+        if ball_coords == 2:
+            ball_obs = spaces.Box(-1, 1, (2,))
+        elif ball_coords == 3:
+            ball_obs = spaces.Box(-20, 20, (3,))
+        else:
+            raise Exception("2 or 3 ball coords is supported")
+
+        print(ball_obs)
+
         self.observation_space = spaces.Dict({
-            "ball": spaces.Box(-20, 20, (3,)),
+            "ball": ball_obs,
             "player1_arms": spaces.Tuple((
                 # arm 1
                 spaces.Dict({
@@ -116,25 +128,42 @@ class KickerEnv(gym.Env):
                                  physicsClientId=self.pb_connection)
 
         # matrix for screenshots
-        self.viewMatrix = computeViewMatrixFromYawPitchRoll(
-            cameraTargetPosition=(0, 0, 0),
-            distance=20,
-            yaw=90.,
-            pitch=-89.999999,
-            roll=0.,
+
+        cam_camera_target_position=(0, 0, 0)
+        cam_distance=20.
+        cam_yaw=90.
+        cam_pitch=-89.99999
+        cam_roll=0.
+        cam_up_axis_index=2
+
+        resetDebugVisualizerCamera(
+                cameraDistance=cam_distance,
+                cameraYaw=cam_yaw,
+                cameraPitch=cam_pitch,
+                cameraTargetPosition=cam_camera_target_position,
+                physicsClientId=self.pb_connection
+        )
+
+        self.view_matrix = computeViewMatrixFromYawPitchRoll(
+            cameraTargetPosition=cam_camera_target_position,
+            distance=cam_distance,
+            yaw=cam_yaw,
+            pitch=cam_pitch,
+            roll=cam_roll,
             upAxisIndex=2,
             physicsClientId=self.pb_connection
         )
 
-        # for screenshots
-        self.projectionMatrix = computeProjectionMatrixFOV(
-            90,
-            render_resolution[0] / render_resolution[1],
-            0,
-            20
+        self.projection_matrix = computeProjectionMatrixFOV(
+            fov=90,
+            aspect=render_resolution[0] / render_resolution[1],
+            nearVal=0.1,
+            farVal=100
         )
 
-        camera_reset(self.pb_connection)
+        projection_matrix_np = np.array(self.projection_matrix).reshape(4, 4)
+        view_matrix_np = np.array(self.view_matrix).reshape(4, 4)
+        self.mvp_matrix = projection_matrix_np.T @ view_matrix_np.T
 
         self.pb_objects, self.pb_zero_state = create_scene(self.pb_connection)
 
@@ -151,24 +180,31 @@ class KickerEnv(gym.Env):
             return getCameraImage(
                 self.camera_width,
                 self.camera_height,
-                viewMatrix=self.viewMatrix,
-                projectionMatrix=self.projectionMatrix,
+                viewMatrix=self.view_matrix,
+                projectionMatrix=self.projection_matrix,
                 physicsClientId=self.pb_connection,
             )[2]
         else:
             super().render(mode=mode)
 
+    def _project_coords(self, x, y, z):
+        v = np.array((x, y, z, 1))
+        pr_v =  self.mvp_matrix @ v.T
+        pr_v = pr_v / pr_v[-1]
+        return pr_v[:2]
+
     def _get_obs(self):
+        ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
+                                                 self.pb_connection)[0]
+
+        ball_cds_2d = self._project_coords(*ball_cds)
         # rotator_id, slider_id = 1, 2
         p1a1 = getJointStates(self.pb_objects["player1_arm1"], (1, 2))
         p1a2 = getJointStates(self.pb_objects["player1_arm2"], (1, 2))
         p2a1 = getJointStates(self.pb_objects["player2_arm1"], (1, 2))
         p2a2 = getJointStates(self.pb_objects["player2_arm2"], (1, 2))
         return {
-            "ball": getBasePositionAndOrientation(
-                self.pb_objects['ball'],
-                physicsClientId=self.pb_connection
-            )[0],
+            "ball": ball_cds if self.ball_coords == 3 else ball_cds_2d,
             "player1_arms": (
                 ({
                     "rotator": p1a1[0][0],
@@ -244,6 +280,7 @@ class KickerEnv(gym.Env):
 
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
                                                  self.pb_connection)[0]
+
         done = bool(is_done(ball_cds))
         if self.max_steps is not None and self.step_cnt > self.max_steps:
             done = True
