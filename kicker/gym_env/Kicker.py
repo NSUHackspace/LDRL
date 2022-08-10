@@ -33,7 +33,9 @@ class KickerEnv(gym.Env):
                       physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
                  max_steps: Optional[int] = None,
-                 ball_coords: Optional[int] = 2
+                 ball_coords: Optional[int] = 2,
+                 ball_init_lim_x: Optional[Tuple[float, float]] = (-10, 10),
+                 ball_init_lim_y: Optional[Tuple[float, float]] = (-10, 10),
                  ):
         """
 
@@ -59,7 +61,8 @@ class KickerEnv(gym.Env):
         else:
             raise Exception("2 or 3 ball coords is supported")
 
-        print(ball_obs)
+        self.ball_init_lim_x = ball_init_lim_x
+        self.ball_init_lim_y = ball_init_lim_y
 
         self.observation_space = spaces.Dict({
             "ball": ball_obs,
@@ -240,7 +243,22 @@ class KickerEnv(gym.Env):
                     ),
                     self.pb_connection)
         self.step_cnt = 0
+        self.randomize_ball()
         return self._get_obs()
+
+    def randomize_ball(self):
+        x = np.random.uniform(*self.ball_init_lim_x)
+        y = np.random.uniform(*self.ball_init_lim_y)
+        z = 5
+
+        q=pb.getQuaternionFromEuler((0,0,0))
+
+        resetBasePositionAndOrientation(
+                self.pb_objects["ball"],
+                [x,y,z],
+                q,
+                self.pb_connection)
+
 
     def step(self, action):
         self.step_cnt += 1
