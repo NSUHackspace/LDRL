@@ -8,6 +8,7 @@ from gym.wrappers import FlattenObservation
 from gym import ActionWrapper
 import gym
 from gym import spaces
+from kicker.ai.rotate_to_target import create_rotate_to_target_bot
 
 
 class FlattenAction(ActionWrapper):
@@ -38,12 +39,13 @@ def main():
     # creating Gym environment
     env = FlattenAction(
         FlattenObservation(
-            KickerEnv(bullet_connection_type=pb.GUI, ai_function=None, max_steps=10000)
+            KickerEnv(bullet_connection_type=pb.GUI, max_steps=10000,
+            ai_function=create_rotate_to_target_bot)
         )
     )
 
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=1E+6)
+    model.learn(total_timesteps=1e6)
 
     obs = env.reset()
     for i in range(1000):
