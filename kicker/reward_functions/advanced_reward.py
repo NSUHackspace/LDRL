@@ -42,7 +42,7 @@ def simple_reward(ball_cds: Tuple[float, float, float], *args, **kwargs) -> floa
     :return: reward value
     """
 
-    if is_done_by_coords.is_done(ball_cds):
-        return is_done_by_coords.is_done(ball_cds) * 50
+    if is_done_by_coords.is_done(ball_cds) != 0:
+        return is_done_by_coords.is_done(ball_cds) * 200
     else:
-        return -0.5
+        return -0.01
