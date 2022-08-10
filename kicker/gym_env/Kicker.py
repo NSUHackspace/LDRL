@@ -9,6 +9,7 @@ import pybullet as pb
 from pybullet import *
 from typing import Tuple, Union, Optional, List, Callable, Dict
 from ..ai import simple_bot
+import math
 
 # types for typing
 physicsClientId = int
@@ -53,28 +54,24 @@ class KickerEnv(gym.Env):
             "player1_arms": spaces.Tuple((
                 # arm 1
                 spaces.Dict({
-                    "rotator": spaces.Box(np.array([-np.pi]),
-                                          np.array([np.pi])),
+                    "rotator": spaces.Box(-1., 1., (2,)),
                     "slider": spaces.Box(np.array([-3]), np.array([3]))
                 }),
                 # arm 2
                 spaces.Dict({
-                    "rotator": spaces.Box(np.array([-np.pi]),
-                                          np.array([np.pi])),
+                    "rotator": spaces.Box(-1, 1, (2,)),
                     "slider": spaces.Box(np.array([-3]), np.array([3]))
                 }),
             )),
             "player2_arms": spaces.Tuple((
                 # arm 1
                 spaces.Dict({
-                    "rotator": spaces.Box(np.array([-np.pi]),
-                                          np.array([np.pi])),
+                    "rotator": spaces.Box(-1, 1, (2,)),
                     "slider": spaces.Box(np.array([-3]), np.array([3]))
                 }),
                 # arm 2
                 spaces.Dict({
-                    "rotator": spaces.Box(np.array([-np.pi]),
-                                          np.array([np.pi])),
+                    "rotator": spaces.Box(-1, 1, (2,)),
                     "slider": spaces.Box(np.array([-3]), np.array([3]))
                 }),
             )),
@@ -171,21 +168,21 @@ class KickerEnv(gym.Env):
             )[0],
             "player1_arms": (
                 ({
-                    "rotator": p1a1[0][0],
+                    "rotator": np.array([math.sin(p1a1[0][0]), math.cos(p1a1[0][0])]),
                     "slider": p1a1[1][0],
                 }),
                 ({
-                    "rotator": p1a2[0][0],
+                    "rotator": np.array([math.sin(p1a2[0][0]), math.cos(p1a2[0][0])]),
                     "slider": p1a2[1][0],
                 }),
             ),
             "player2_arms": (
                 ({
-                    "rotator": p2a1[0][0],
+                    "rotator": np.array([math.sin(p2a1[0][0]), math.cos(p2a1[0][0])]),
                     "slider": p2a1[1][0],
                 }),
                 ({
-                    "rotator": p2a2[0][0],
+                    "rotator": np.array([math.sin(p2a2[0][0]), math.cos(p2a2[0][0])]),
                     "slider": p2a2[1][0],
                 }),
             )
