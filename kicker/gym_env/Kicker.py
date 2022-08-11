@@ -295,7 +295,9 @@ class KickerEnv(gym.Env):
             physicsClientId=self.pb_connection
         )
 
-        done = False
+        ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
+                                                self.pb_connection)[0]
+        done = bool(is_done(ball_cds))
 
         for _ in " " * (self.frame_skip - 1):
             if done:
