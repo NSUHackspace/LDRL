@@ -28,23 +28,29 @@ def create_rotate_to_target_bot(pb_objects: Dict[str, int], physicsClientId: int
             physicsClientId=physicsClientId,
         )
 
-        arm1_pos = -x + np.random.uniform(-3, 3)
+        if x < -6:
+            x += 6
+
+        if x > 6:
+            x -= 6
+
+        arm1_pos = -x + np.random.uniform(-5, 5)
         setJointMotorControl2(
             arm1_id,
             slider_id,
             pb.POSITION_CONTROL,
             targetPosition=arm1_pos,
-            positionGain=0.005,
+            positionGain=0.01,
             physicsClientId=physicsClientId,
         )
 
-        arm2_pos = -x + np.random.uniform(-3, 3)
+        arm2_pos = -x + np.random.uniform(-5, 5)
         setJointMotorControl2(
             arm2_id,
             slider_id,
             pb.POSITION_CONTROL,
             targetPosition=arm2_pos,
-            positionGain=0.005,
+            positionGain=0.01,
             physicsClientId=physicsClientId,
         )
 
