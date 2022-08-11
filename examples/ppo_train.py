@@ -5,6 +5,7 @@ import pybullet as pb
 from kicker.reset_functions import camera_reset
 from stable_baselines3 import PPO
 from gym.wrappers import FlattenObservation
+from gym.wrappers import FrameStack
 from gym import ActionWrapper
 import gym
 from gym import spaces
@@ -43,6 +44,7 @@ def main():
             ai_function=create_rotate_to_target_bot)
         )
     )
+    env = FrameStack(env, 2)
 
     model = PPO("MlpPolicy", env, verbose=1)
     model.learn(total_timesteps=1e6)
