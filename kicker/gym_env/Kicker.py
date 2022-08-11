@@ -55,7 +55,7 @@ class KickerEnv(gym.Env):
 
         self.max_steps = max_steps
 
-        self.frame_skip = frame_skip
+        self.frame_skip = frame_skip if frame_skip else 1
 
         self.ball_coords = ball_coords
         if ball_coords == 2:
