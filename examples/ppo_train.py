@@ -8,54 +8,50 @@ from gym.wrappers import FlattenObservation
 from gym.wrappers import FrameStack
 from gym import ActionWrapper
 import gym
-from gym import spaces
 from kicker.ai.rotate_to_target import create_rotate_to_target_bot
-
-
-class FlattenAction(ActionWrapper):
-    """Action space wrapper that flattens the actions."""
-
-    def __init__(self, env: gym.Env):
-        """Flattens the observations of an environment.
-
-        Args:
-            env: The environment to apply the wrapper
-        """
-        super().__init__(env)
-        self.action_space = spaces.flatten_space(env.action_space)
-
-    def action(self, action):
-        """Flattens an action.
-
-        Args:
-            action: The action to flatten
-
-        Returns:
-            The flattened action
-        """
-        return spaces.unflatten(self.env.action_space, action)
+from stable_baselines3.common.callbacks import CheckpointCallback
+from kicker.wrappers import FlattenAction
+from kicker.callbacks import GoalCallback
+from stable_baselines3.common.logger import configure
+from kicker.wrappers import FlattenAction
+from kicker.callbacks import GoalCallback
+import os
 
 
 def main():
     # creating Gym environment
     env = FlattenAction(
         FlattenObservation(
-            KickerEnv(bullet_connection_type=pb.GUI, max_steps=10000,
-            ai_function=create_rotate_to_target_bot)
+            KickerEnv(
+                bullet_connection_type=pb.DIRECT,
+                max_steps=10000,
+                ai_function=create_rotate_to_target_bot,
+            )
         )
     )
     env = FrameStack(env, 2)
 
-    model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=1e6)
+    model_dir = "model/ppo"
+    if not os.path.exists(model_dir):
+        os.makedirs(model_dir)
 
-    obs = env.reset()
-    for i in range(1000):
-        action, _states = model.predict(obs, deterministic=True)
-        obs, reward, done, info = env.step(action)
-        env.render()
-        if done:
-            obs = env.reset()
+    logdir = "logs/ppo"
+    if not os.path.exists(logdir):
+        os.makedirs(logdir)
+
+    checkpoint_callback = CheckpointCallback(
+        save_freq=100000, save_path=logdir, name_prefix="ppo"
+    )
+    goal_callback = GoalCallback()
+    new_logger = configure(logdir, ["csv", "tensorboard"])
+
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./cartpole_tensorboard/")
+    model.set_logger(new_logger)
+    model.learn(
+        total_timesteps=10e6,
+        log_interval=1,
+        callback=[goal_callback, checkpoint_callback],
+    )
 
     env.close()
 
