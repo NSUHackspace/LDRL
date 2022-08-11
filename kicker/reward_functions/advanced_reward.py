@@ -29,7 +29,7 @@ def reward_function(ball_cds: Tuple[float, float, float], *args, **kwargs) -> fl
 
     x, y, z = ball_cds
     return minus_mult((9 - x ** 2) + minus_mult((90 - x ** 2), (6 - z)),
-                      (y + 13))
+                      (y + 13)) - 11000
 
 
 def simple_reward(ball_cds: Tuple[float, float, float], *args, **kwargs) -> float:
