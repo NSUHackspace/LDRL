@@ -57,6 +57,9 @@ class KickerEnv(gym.Env):
 
         self.frame_skip = frame_skip if frame_skip else 1
 
+        # variable for goals info extraction
+        self.ball_return = [0]
+        
         self.ball_coords = ball_coords
         if ball_coords == 2:
             ball_obs = spaces.Box(-1, 1, (2,))
@@ -313,11 +316,10 @@ class KickerEnv(gym.Env):
             stepSimulation(self.pb_connection)
 
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
-                                                 self.pb_connection)[0]
+                                                 self.pb_connection)[0]        
         
-        # variable for goals info extraction
-        self._ball_return = is_done(ball_cds)
-        done = bool(self._ball_return)
+        self.ball_return = is_done(ball_cds)
+        done = bool(self.ball_return)
 
         if self.max_steps is not None and self.step_cnt > self.max_steps:
             done = True
