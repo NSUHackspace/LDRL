@@ -314,7 +314,10 @@ class KickerEnv(gym.Env):
 
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
                                                  self.pb_connection)[0]
-        done = bool(is_done(ball_cds))
+        
+        # variable for goals info extraction
+        self._ball_return = is_done(ball_cds)
+        done = bool(self._ball_return)
 
         if self.max_steps is not None and self.step_cnt > self.max_steps:
             done = True
