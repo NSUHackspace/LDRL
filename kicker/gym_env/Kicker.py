@@ -32,6 +32,7 @@ class KickerEnv(gym.Env):
                      [ball_coordinates,
                       physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
+                 frame_skip: Optional[int] = 1,
                  max_steps: Optional[int] = None,
                  ball_coords: Optional[int] = 2,
                  ball_init_lim_x: Optional[Tuple[float, float]] = (-10, 10),
@@ -45,6 +46,7 @@ class KickerEnv(gym.Env):
         :param ai_function: <b> can be None</b> function that accepts dictionary of objects (and physicsClientId) and return function that control player on call
         :param reward_function: Function that accepts: (Arm1 unique id, Arm2 unique id, ball unique id, physicsClientId)
         :param player: Which player will be controlled by env (Unused!)
+        :param frame_skip: the frequency at which the agent experiences the game.
         """
         self.camera_width, self.camera_height = render_resolution
 
@@ -52,6 +54,8 @@ class KickerEnv(gym.Env):
             'render.modes'] else 'human'
 
         self.max_steps = max_steps
+
+        self.frame_skip = frame_skip
 
         self.ball_coords = ball_coords
         if ball_coords == 2:
@@ -175,8 +179,8 @@ class KickerEnv(gym.Env):
             self.pb_connection
         ) if ai_function else None
 
-    def render(self, mode: str):
-        if mode == "rgba_array":
+    def render(self, mode: Optional[str] = None):
+        if mode and mode == "rgba_array" or self.render_mode == "rgba_array":
             return getCameraImage(
                 self.camera_width,
                 self.camera_height,
@@ -291,20 +295,32 @@ class KickerEnv(gym.Env):
             physicsClientId=self.pb_connection
         )
 
-        stepSimulation(self.pb_connection)
+        done = False
+
+        for _ in " " * (self.frame_skip - 1):
+            if done:
+                break
+            stepSimulation(self.pb_connection)
+            ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
+                                                     self.pb_connection)[0]
+            if self.ai_bot:
+                self.ai_bot(ball_cds)
+            done = bool(is_done(ball_cds))
+
+        if not done:
+            stepSimulation(self.pb_connection)
 
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
                                                  self.pb_connection)[0]
-
         done = bool(is_done(ball_cds))
+
         if self.max_steps is not None and self.step_cnt > self.max_steps:
             done = True
 
-        reward = self.reward_function(ball_cds, self.pb_connection)
-        obs = self._get_obs()
-
         if self.ai_bot:
             self.ai_bot(ball_cds)
+        reward = self.reward_function(ball_cds, self.pb_connection)
+        obs = self._get_obs()
 
         return obs, reward, done, {}
 
