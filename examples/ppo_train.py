@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
 
-from kicker.gym_env import KickerEnv
-import pybullet as pb
-from kicker.reset_functions import camera_reset
-from stable_baselines3 import PPO
-from gym.wrappers import FlattenObservation
-from gym.wrappers import FrameStack
-from gym import ActionWrapper
-import gym
-from kicker.ai.rotate_to_target import create_rotate_to_target_bot
-from stable_baselines3.common.callbacks import CheckpointCallback
-from kicker.wrappers import FlattenAction
-from kicker.callbacks import GoalCallback
-from stable_baselines3.common.logger import configure
-from kicker.wrappers import FlattenAction
-from kicker.callbacks import GoalCallback
-from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 import os
-from typing import Callable
-from stable_baselines3.common.utils import set_random_seed
-from gym.wrappers import TimeLimit
 from datetime import datetime
+from typing import Callable
+
+import gym
+import pybullet as pb
+from gym import ActionWrapper
+from gym.wrappers import FlattenObservation, FrameStack, TimeLimit
+from kicker.ai.rotate_to_target import create_rotate_to_target_bot
+from kicker.callbacks import GoalCallback
+from kicker.gym_env import KickerEnv
+from kicker.reset_functions import camera_reset
+from kicker.reward_functions import simple_reward
+from kicker.wrappers import FlattenAction
+from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.logger import configure
+from stable_baselines3.common.utils import set_random_seed
+from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 
 
 def make_env(rank: int, seed: int = 0) -> Callable:
@@ -39,6 +37,7 @@ def make_env(rank: int, seed: int = 0) -> Callable:
             FlattenObservation(
                 KickerEnv(
                     bullet_connection_type=pb.DIRECT,
+                    reward_function=simple_reward,
                     # ai_function=create_rotate_to_target_bot,
                     ai_function=None,
                     ball_init_lim_x = (-1, 1),
@@ -72,7 +71,7 @@ def main():
         os.makedirs(logdir)
 
     checkpoint_callback = CheckpointCallback(
-        save_freq=10000, save_path=model_dir, name_prefix="ppo"
+        save_freq=500000, save_path=model_dir, name_prefix="ppo"
     )
     goal_callback = GoalCallback()
     new_logger = configure(logdir, ["csv", "tensorboard"])
