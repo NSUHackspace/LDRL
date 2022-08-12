@@ -2,6 +2,9 @@ from kicker.gym_env import KickerEnv
 from pybullet import getKeyboardEvents
 from kicker.reset_functions import camera_reset
 
+# creating Gym environment
+env = KickerEnv()
+
 # hotkeys to reset environment and camera
 KEY_R = ord("r")
 KEY_C = ord("c")
