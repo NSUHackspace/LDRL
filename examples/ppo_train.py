@@ -19,6 +19,8 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 import os
 from typing import Callable
 from stable_baselines3.common.utils import set_random_seed
+from gym.wrappers import TimeLimit
+from datetime import datetime
 
 
 def make_env(rank: int, seed: int = 0) -> Callable:
@@ -37,11 +39,11 @@ def make_env(rank: int, seed: int = 0) -> Callable:
             FlattenObservation(
                 KickerEnv(
                     bullet_connection_type=pb.DIRECT,
-                    max_steps=10000,
                     ai_function=create_rotate_to_target_bot,
                 )
             )
         )
+        env = TimeLimit(env, max_episode_steps=10000)
         env = FrameStack(env, 2)
         env.seed(seed + rank)
         return env
@@ -51,15 +53,17 @@ def make_env(rank: int, seed: int = 0) -> Callable:
 
 
 def main():
-    num_cpu = 10  # Number of processes to use
-    # Create the vectorized environment
-    env = SubprocVecEnv([make_env(i) for i in range(num_cpu)])
+    # num_cpu = 12  # Number of processes to use
+    # # Create the vectorized environment
+    # env = SubprocVecEnv([make_env(i) for i in range(num_cpu)])
+    env = make_env(0)()
+    timestamp = datetime.now().strftime("%Y-%m-%d.%H-%M-%S")
 
-    model_dir = "model/ppo"
+    model_dir = f"model/ppo_{timestamp}"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
-    logdir = "logs/ppo"
+    logdir = f"logs/ppo_{timestamp}"
     if not os.path.exists(logdir):
         os.makedirs(logdir)
 

@@ -33,7 +33,6 @@ class KickerEnv(gym.Env):
                       physicsClientId], float] = advanced_reward_function,
                  player: 1 or 2 = 1,  # unused for now
                  frame_skip: Optional[int] = 1,
-                 max_steps: Optional[int] = None,
                  ball_coords: Optional[int] = 2,
                  ball_init_lim_x: Optional[Tuple[float, float]] = (-10, 10),
                  ball_init_lim_y: Optional[Tuple[float, float]] = (-10, 10),
@@ -53,13 +52,11 @@ class KickerEnv(gym.Env):
         self.render_mode = render_mode if render_mode in self.metadata[
             'render.modes'] else 'human'
 
-        self.max_steps = max_steps
-
         self.frame_skip = frame_skip if frame_skip else 1
 
         # variable for goals info extraction
         self.ball_return = [0]
-        
+
         self.ball_coords = ball_coords
         if ball_coords == 2:
             ball_obs = spaces.Box(-1, 1, (2,))
@@ -316,13 +313,10 @@ class KickerEnv(gym.Env):
             stepSimulation(self.pb_connection)
 
         ball_cds = getBasePositionAndOrientation(self.pb_objects["ball"],
-                                                 self.pb_connection)[0]        
-        
+                                                 self.pb_connection)[0]
+
         self.ball_return = is_done(ball_cds)
         done = bool(self.ball_return)
-
-        if self.max_steps is not None and self.step_cnt > self.max_steps:
-            done = True
 
         if self.ai_bot:
             self.ai_bot(ball_cds)
