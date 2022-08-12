@@ -21,7 +21,7 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 
 
-def make_env(rank: int, seed: int = 0) -> Callable:
+def make_env(rank: int, seed: int = 0, bullet_connection_type=pb.DIRECT) -> Callable:
     """
     Utility function for multiprocessed env.
 
@@ -36,7 +36,7 @@ def make_env(rank: int, seed: int = 0) -> Callable:
         env = FlattenAction(
             FlattenObservation(
                 KickerEnv(
-                    bullet_connection_type=pb.DIRECT,
+                    bullet_connection_type=bullet_connection_type,
                     reward_function=simple_reward,
                     # ai_function=create_rotate_to_target_bot,
                     ai_function=None,
