@@ -1,6 +1,7 @@
 from pybullet import getLinkStates, setJointMotorControl2
 import pybullet as pb
 from typing import Dict, Tuple
+from ..scene.consts import BALL_R, FOOTBALLER_SIZE_X
 
 
 def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
@@ -67,7 +68,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 physicsClientId=physicsClientId
             )
         # sliders
-        if x > p2_b[0]:
+        if x + FOOTBALLER_SIZE_X + BALL_R > p2_b[0]:
             setJointMotorControl2(
                 arm2_id,
                 slider_id,
@@ -75,7 +76,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 targetPosition=p2_b[0] - x,
                 physicsClientId=physicsClientId
             )
-        elif x < p3_b[0]:
+        elif x < p3_b[0] + FOOTBALLER_SIZE_X + BALL_R:
             setJointMotorControl2(
                 arm2_id,
                 slider_id,
@@ -91,7 +92,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                 targetPosition=p1_b[0] - x,
                 physicsClientId=physicsClientId
             )
-        if x > p2_a[0]:
+        if x + FOOTBALLER_SIZE_X + BALL_R > p2_a[0]:
             if p1ymi <= y <= p1yma:
                 setJointMotorControl2(
                     arm1_id,
@@ -108,7 +109,7 @@ def create_bot(pb_objects: Dict[str, int], physicsClientId: int = 0):
                     targetPosition=p2_a[0] - x,
                     physicsClientId=physicsClientId
                 )
-        elif x < p3_a[0]:
+        elif x < p3_a[0] + FOOTBALLER_SIZE_X + BALL_R:
             setJointMotorControl2(
                 arm1_id,
                 slider_id,
