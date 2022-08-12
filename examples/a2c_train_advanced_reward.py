@@ -37,7 +37,7 @@ def make_env(rank: int, seed: int = 0, bullet_connection_type=pb.DIRECT) -> Call
             FlattenObservation(
                 KickerEnv(
                     bullet_connection_type=bullet_connection_type,
-                    reward_function=simple_reward,
+                    reward_function=advanced_reward_function,
                     ai_function=create_rotate_to_target_bot,
                     # ai_function=None,
                     ball_init_lim_x=(-1, 1),
@@ -62,11 +62,11 @@ def main():
 
     timestamp = datetime.now().strftime("%Y-%m-%d.%H-%M-%S")
 
-    model_dir = f"model/a2c_{timestamp}"
+    model_dir = f"model/a2c_a_{timestamp}"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
-    logdir = f"logs/a2c_{timestamp}"
+    logdir = f"logs/a2c_a_{timestamp}"
     if not os.path.exists(logdir):
         os.makedirs(logdir)
 
