@@ -32,9 +32,10 @@ def main():
 
     env = FlattenAction(
         FlattenObservation(
-            KickerEnv(bullet_connection_type=pb.GUI, ai_function=None, max_steps=10000, reward_function=simple_reward)
+            KickerEnv(bullet_connection_type=pb.GUI, ai_function=None, reward_function=simple_reward)
         )
     )
+    env = TimeLimit(env, max_episode_steps=10000)
 
     model = A2C("MlpPolicy", env, verbose=1)
     model.set_logger(new_logger)
