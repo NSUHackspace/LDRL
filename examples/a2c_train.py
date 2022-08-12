@@ -37,11 +37,11 @@ def make_env(rank: int, seed: int = 0) -> Callable:
             FlattenObservation(
                 KickerEnv(
                     bullet_connection_type=pb.DIRECT,
-                    reward_function=advanced_reward_function,
-                    # ai_function=create_rotate_to_target_bot,
-                    ai_function=None,
-                    ball_init_lim_x = (-1, 1),
-                    ball_init_lim_y = (-1, 1)
+                    reward_function=simple_reward,
+                    ai_function=create_rotate_to_target_bot,
+                    # ai_function=None,
+                    ball_init_lim_x=(-1, 1),
+                    ball_init_lim_y=(-1, 1),
                 )
             )
         )
@@ -80,6 +80,7 @@ def main():
     model.set_logger(new_logger)
     model.learn(
         total_timesteps=10e6,
+        log_interval=1,
         callback=[goal_callback, checkpoint_callback],
     )
 
