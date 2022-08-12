@@ -1,7 +1,10 @@
 from typing import Tuple
 from ..is_done_functions import is_done_by_coords
+from ..scene.consts import *
 
-def reward_function(ball_cds: Tuple[float, float, float], *args, **kwargs) -> float:
+
+def reward_function(ball_cds: Tuple[float, float, float], *args,
+                    **kwargs) -> float:
     """
     Some simple reward function realization.
     The idea is the more the function:
@@ -28,11 +31,15 @@ def reward_function(ball_cds: Tuple[float, float, float], *args, **kwargs) -> fl
         return a * b * -1 ** (a < 0 and b < 0)
 
     x, y, z = ball_cds
-    return minus_mult((9 - x ** 2) + minus_mult((90 - x ** 2), (6 - z)),
-                      (y + 13)) - 11000
+    return minus_mult(
+        ((BOARD_SIZE_X - BOARD_GATE_WALL_SIZE_X * 2) - x ** 2) + minus_mult(
+            ((BOARD_SIZE_X - BOARD_GATE_WALL_SIZE_X * 2) ** 2 - x ** 2),
+            (BOARD_SIZE_Z - z)),
+        (y + BOARD_SHIFT_Z)) - 800
 
 
-def simple_reward(ball_cds: Tuple[float, float, float], *args, **kwargs) -> float:
+def simple_reward(ball_cds: Tuple[float, float, float], *args,
+                  **kwargs) -> float:
     """
     Simplest reward function: just positive reward if agent win and negative if it lost
 
