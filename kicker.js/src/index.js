@@ -1,9 +1,12 @@
 import Ammo from 'Ammo.js/builds/ammo'
 import * as THREE from 'three';
 import URDFLoader from "urdf-loader";
+import {Object3D} from "three";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 //variable declaration section
-let physicsWorld, scene, camera, renderer, rigidBodies = [], clock, tmpTrans
+THREE.Object3D.DefaultUp.set( 0, 0, 1 );
+let physicsWorld, scene, camera, renderer, rigidBodies = [], clock, tmpTrans, controls
 let colGroupPlane = 1, colGroupRedBall = 2, colGroupGreenBall = 4
 
 //Ammojs Initialization
@@ -17,32 +20,65 @@ function start (Ammo){
 
     setupGraphics();
 
+    function link_to_ammo (Ammo, link) {
+        let mass = 0;
+
+        //Ammojs Section
+        let transform = new Ammo.btTransform();
+        transform.setIdentity();
+        transform.setOrigin( new Ammo.btVector3( link.position.x, link.position.y, link.position.z ) );
+        transform.setRotation( new Ammo.btQuaternion( link.quaternion.x, link.quaternion.y, link.quaternion.z, link.quaternion.w ) );
+        let motionState = new Ammo.btDefaultMotionState( transform );
+
+        let bbox = new THREE.Box3().setFromObject(link);
+        console.log(`${link.urdfName}:`)
+        console.log(bbox)
+        console.log(link.position)
+        let colShape = new Ammo.btBoxShape( new Ammo.btVector3( bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y, bbox.max.z - bbox.min.z ) );
+        colShape.setMargin( 0.05 );
+
+        let localInertia = new Ammo.btVector3( 0, 0, 0 );
+        colShape.calculateLocalInertia( mass, localInertia );
+
+        let rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, colShape, localInertia );
+        let body = new Ammo.btRigidBody( rbInfo );
+
+
+        physicsWorld.addRigidBody( body );
+    }
+
     const manager = new THREE.LoadingManager();
     const loader = new URDFLoader(manager);
+    createBall(Ammo);
     loader.load("../../kicker/assets/arm1.urdf", robot => {
         scene.add(robot);
-        console.log(robot.colliders)
-        console.log(robot.joints)
-        console.log(robot.links)
+        // console.log(robot.colliders)
+        // console.log(robot.joints)
+        // console.log(robot.links)
     })
     loader.load("../../kicker/assets/arm2.urdf", robot => {
         scene.add(robot)
-        console.log(robot.colliders)
-        console.log(robot.joints)
-        console.log(robot.links)
+        // console.log(robot.colliders)
+        // console.log(robot.joints)
+        // console.log(robot.links)
         // physicsWorld.addRigidBody(robot);
     })
-    loader.load("../../kicker/assets/board.urdf", robot => {
+    loader.load("../../kicker/assets/board.urdf", (robot) => {
+        // robot.lookAt(0, 1, 0)
         scene.add(robot)
-        console.log(robot.colliders)
+        // link_to_ammo(Ammo, robot.links.board)
+        for (let prop in robot.links) {
+            link_to_ammo(Ammo, robot.links[prop])
+        }
         console.log(robot.joints)
-        console.log(robot.links)
+        // for (let prop in robot.joints) {
+        //     console.log(prop.axis)
+        // }
+        // console.log(robot.links)
         // physicsWorld.addRigidBody(robot);
     })
 
-    // createBlock(Ammo);
-    createBall(Ammo);
-    createBlock(Ammo)
+    // createBlock(Ammo)
     // createJointObjects(Ammo);
 
     renderFrame();
@@ -57,38 +93,39 @@ function setupPhysicsWorld(Ammo){
         solver                  = new Ammo.btSequentialImpulseConstraintSolver();
 
     physicsWorld           = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-    physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
+    physicsWorld.setGravity(new Ammo.btVector3(0, 0, -10));
 
 }
 
 
-function setupGraphics(){
+function setupGraphics() {
 
     //create clock for timing
     clock = new THREE.Clock();
 
     //create the scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xbfd1e5 );
+    scene.background = new THREE.Color(0xbfd1e5);
 
     //create camera
-    camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.2, 5000 );
-    camera.position.set( 0, 30, 70 );
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 5000);
+    camera.position.set(0, 30, 70);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
+
     //Add hemisphere light
-    let hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.1 );
-    hemiLight.color.setHSL( 0.6, 0.6, 0.6 );
-    hemiLight.groundColor.setHSL( 0.1, 1, 0.4 );
-    hemiLight.position.set( 0, 50, 0 );
-    scene.add( hemiLight );
+    let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
+    hemiLight.color.setHSL(0.6, 0.6, 0.6);
+    hemiLight.groundColor.setHSL(0.1, 1, 0.4);
+    hemiLight.position.set(0, 50, 0);
+    scene.add(hemiLight);
 
     //Add directional light
-    let dirLight = new THREE.DirectionalLight( 0xffffff , 1);
-    dirLight.color.setHSL( 0.1, 1, 0.95 );
-    dirLight.position.set( -1, 1.75, 1 );
-    dirLight.position.multiplyScalar( 100 );
-    scene.add( dirLight );
+    let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.color.setHSL(0.1, 1, 0.95);
+    dirLight.position.set(-1, 1.75, 1);
+    dirLight.position.multiplyScalar(100);
+    scene.add(dirLight);
 
     dirLight.castShadow = true;
 
@@ -105,58 +142,19 @@ function setupGraphics(){
     dirLight.shadow.camera.far = 13500;
 
     //Setup the renderer
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setClearColor( 0xbfd1e5 );
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setClearColor(0xbfd1e5);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
     renderer.gammaInput = true;
     renderer.gammaOutput = true;
 
     renderer.shadowMap.enabled = true;
-function createBall(Ammo){
 
-    let pos = {x: 0, y: 20, z: 0};
-    let radius = 2;
-    let quat = {x: 0, y: 0, z: 0, w: 1};
-    let mass = 1;
-
-    //threeJS Section
-    let ball = new THREE.Mesh(new THREE.SphereBufferGeometry(radius), new THREE.MeshPhongMaterial({color: 0xff0505}));
-
-    ball.position.set(pos.x, pos.y, pos.z);
-
-    ball.castShadow = true;
-    ball.receiveShadow = true;
-
-    scene.add(ball);
-
-
-    //Ammojs Section
-    let transform = new Ammo.btTransform();
-    transform.setIdentity();
-    transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
-    transform.setRotation( new Ammo.btQuaternion( quat.x, quat.y, quat.z, quat.w ) );
-    let motionState = new Ammo.btDefaultMotionState( transform );
-
-    let colShape = new Ammo.btSphereShape( radius );
-    colShape.setMargin( 0.05 );
-
-    let localInertia = new Ammo.btVector3( 0, 0, 0 );
-    colShape.calculateLocalInertia( mass, localInertia );
-
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, colShape, localInertia );
-    let body = new Ammo.btRigidBody( rbInfo );
-
-
-    physicsWorld.addRigidBody( body );
-
-    ball.userData.physicsBody = body;
-    rigidBodies.push(ball);
+    controls = new OrbitControls( camera, renderer.domElement );
 }
-}
-
 
 function renderFrame(){
 
@@ -164,59 +162,19 @@ function renderFrame(){
 
     updatePhysics( deltaTime );
 
+    controls.update();
     renderer.render( scene, camera );
 
     requestAnimationFrame( renderFrame );
 
 }
 
-
-function createBlock(Ammo){
-
-    let pos = {x: 0, y: 0, z: 0};
-    let scale = {x: 50, y: 2, z: 50};
-    let quat = {x: 0, y: 0, z: 0, w: 1};
-    let mass = 0;
-
-    //threeJS Section
-    let blockPlane = new THREE.Mesh(new THREE.BoxBufferGeometry(), new THREE.MeshPhongMaterial({color: 0xa0afa4}));
-
-    blockPlane.position.set(pos.x, pos.y, pos.z);
-    blockPlane.scale.set(scale.x, scale.y, scale.z);
-
-    blockPlane.castShadow = true;
-    blockPlane.receiveShadow = true;
-
-    scene.add(blockPlane);
-
-
-    //Ammojs Section
-    let transform = new Ammo.btTransform();
-    transform.setIdentity();
-    transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
-    transform.setRotation( new Ammo.btQuaternion( quat.x, quat.y, quat.z, quat.w ) );
-    let motionState = new Ammo.btDefaultMotionState( transform );
-
-    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( scale.x * 0.5, scale.y * 0.5, scale.z * 0.5 ) );
-    colShape.setMargin( 0.05 );
-
-    let localInertia = new Ammo.btVector3( 0, 0, 0 );
-    colShape.calculateLocalInertia( mass, localInertia );
-
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, colShape, localInertia );
-    let body = new Ammo.btRigidBody( rbInfo );
-
-
-    physicsWorld.addRigidBody( body );
-}
-
-
 function createBall(Ammo){
 
-    let pos = {x: 1, y: 30, z: 0};
-    let radius = 2;
+    let pos = {x: 0, y: 0, z: 30};
+    let radius = 1.25;
     let quat = {x: 0, y: 0, z: 0, w: 1};
-    let mass = 1;
+    let mass = 10;
 
     //threeJS Section
     let ball = new THREE.Mesh(new THREE.SphereBufferGeometry(radius), new THREE.MeshPhongMaterial({color: 0x00ff08}));

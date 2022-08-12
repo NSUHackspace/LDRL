@@ -1,3 +1,4 @@
+const path = require("path")
 
 module.exports = {
     mode: "development", // "production" | "development" | "none"
@@ -14,6 +15,9 @@ module.exports = {
         // minimize the output files
         /* Advanced optimizations (click to show) */
     },
+    output: {
+        path: path.resolve(__dirname, '../')
+    }
     /* Advanced configuration (click to show) */
     /* Advanced caching configuration (click to show) */
     /* Advanced build configuration (click to show) */
