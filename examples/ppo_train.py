@@ -12,7 +12,7 @@ from kicker.ai.rotate_to_target import create_rotate_to_target_bot
 from kicker.callbacks import GoalCallback
 from kicker.gym_env import KickerEnv
 from kicker.reset_functions import camera_reset
-from kicker.reward_functions import simple_reward
+from kicker.reward_functions import simple_reward, advanced_reward_function
 from kicker.wrappers import FlattenAction
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback
@@ -37,7 +37,7 @@ def make_env(rank: int, seed: int = 0) -> Callable:
             FlattenObservation(
                 KickerEnv(
                     bullet_connection_type=pb.DIRECT,
-                    reward_function=simple_reward,
+                    reward_function=advanced_reward_function,
                     # ai_function=create_rotate_to_target_bot,
                     ai_function=None,
                     ball_init_lim_x = (-1, 1),
@@ -76,7 +76,7 @@ def main():
     goal_callback = GoalCallback()
     new_logger = configure(logdir, ["csv", "tensorboard"])
 
-    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./cartpole_tensorboard/")
+    model = PPO("MlpPolicy", env, verbose=1)
     model.set_logger(new_logger)
     model.learn(
         total_timesteps=10e6,
