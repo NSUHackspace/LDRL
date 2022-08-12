@@ -38,8 +38,11 @@ def make_env(rank: int, seed: int = 0) -> Callable:
         env = FlattenAction(
             FlattenObservation(
                 KickerEnv(
-                    bullet_connection_type=pb.DIRECT,
-                    ai_function=create_rotate_to_target_bot,
+                    bullet_connection_type=pb.GUI,
+                    # ai_function=create_rotate_to_target_bot,
+                    ai_function=None,
+                    ball_init_lim_x = (-1, 1),
+                    ball_init_lim_y = (-1, 1)
                 )
             )
         )
@@ -53,10 +56,11 @@ def make_env(rank: int, seed: int = 0) -> Callable:
 
 
 def main():
-    # num_cpu = 12  # Number of processes to use
+    # num_cpu = 4  # Number of processes to use
     # # Create the vectorized environment
     # env = SubprocVecEnv([make_env(i) for i in range(num_cpu)])
     env = make_env(0)()
+
     timestamp = datetime.now().strftime("%Y-%m-%d.%H-%M-%S")
 
     model_dir = f"model/ppo_{timestamp}"
@@ -68,7 +72,7 @@ def main():
         os.makedirs(logdir)
 
     checkpoint_callback = CheckpointCallback(
-        save_freq=100000, save_path=logdir, name_prefix="ppo"
+        save_freq=10000, save_path=logdir, name_prefix="ppo"
     )
     goal_callback = GoalCallback()
     new_logger = configure(logdir, ["csv", "tensorboard"])
@@ -77,7 +81,6 @@ def main():
     model.set_logger(new_logger)
     model.learn(
         total_timesteps=10e6,
-        log_interval=1,
         callback=[goal_callback, checkpoint_callback],
     )
 
