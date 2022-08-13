@@ -20,22 +20,31 @@ function start (Ammo){
 
     setupGraphics();
 
-    function link_to_ammo (Ammo, link) {
+    function link_to_ammo (Ammo, link, pos) {
+
         let mass = 0;
+
+        let bbox = new THREE.Box3().setFromObject(link);
+        console.log(`${link.urdfName}:`)
+        if (link.name === "board") {
+            bbox.max.z = 0.25
+            bbox.max.x -= 0.5
+            bbox.min.x += 0.5
+            bbox.max.y -= 0.5
+            bbox.min.y += 0.5
+        }
 
         //Ammojs Section
         let transform = new Ammo.btTransform();
         transform.setIdentity();
-        transform.setOrigin( new Ammo.btVector3( link.position.x, link.position.y, link.position.z ) );
+        transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
         transform.setRotation( new Ammo.btQuaternion( link.quaternion.x, link.quaternion.y, link.quaternion.z, link.quaternion.w ) );
         let motionState = new Ammo.btDefaultMotionState( transform );
 
-        let bbox = new THREE.Box3().setFromObject(link);
-        console.log(`${link.urdfName}:`)
+        console.log(link)
         console.log(bbox)
-        console.log(link.position)
         let colShape = new Ammo.btBoxShape( new Ammo.btVector3( bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y, bbox.max.z - bbox.min.z ) );
-        colShape.setMargin( 0.05 );
+        // colShape.setMargin( 0.05 );
 
         let localInertia = new Ammo.btVector3( 0, 0, 0 );
         colShape.calculateLocalInertia( mass, localInertia );
@@ -45,6 +54,11 @@ function start (Ammo){
 
 
         physicsWorld.addRigidBody( body );
+
+        // let ms = new THREE.Mesh(new THREE.BoxBufferGeometry(bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y, bbox.max.z - bbox.min.z), new THREE.MeshPhongMaterial({color: 0xff0000}))
+        // ms.position.set(pos.x, pos.y, pos.z)
+        // ms.quaternion.set(link.quaternion.x, link.quaternion.y, link.quaternion.z, link.quaternion.w)
+        // scene.add(ms)
     }
 
     const manager = new THREE.LoadingManager();
@@ -66,16 +80,12 @@ function start (Ammo){
     loader.load("../../kicker/assets/board.urdf", (robot) => {
         // robot.lookAt(0, 1, 0)
         scene.add(robot)
-        // link_to_ammo(Ammo, robot.links.board)
-        for (let prop in robot.links) {
-            link_to_ammo(Ammo, robot.links[prop])
+        for (let prop in robot.joints) {
+            let joint = robot.joints[prop]
+            console.log("rewrwer------")
+            console.log(joint.position)
+            link_to_ammo(Ammo, joint.children[0], joint.position)
         }
-        console.log(robot.joints)
-        // for (let prop in robot.joints) {
-        //     console.log(prop.axis)
-        // }
-        // console.log(robot.links)
-        // physicsWorld.addRigidBody(robot);
     })
 
     // createBlock(Ammo)

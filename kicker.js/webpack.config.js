@@ -12,6 +12,9 @@ module.exports = {
         // mangleExports: "size",
         // rename export names to shorter names
         minimize: false,
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false,
         // minimize the output files
         /* Advanced optimizations (click to show) */
     },
