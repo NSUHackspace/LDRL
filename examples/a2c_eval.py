@@ -13,7 +13,6 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from kicker.wrappers import FlattenAction
 from kicker.callbacks import GoalCallback
 from stable_baselines3.common.logger import configure
-from kicker.wrappers import FlattenAction
 from kicker.callbacks import GoalCallback
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 import os
@@ -29,9 +28,12 @@ def main():
     env = make_env(0, bullet_connection_type=pb.GUI)()
     model = A2C("MlpPolicy", env, verbose=1)
     model_path = sys.argv[1]
-    print(model_path)
-    # model.load(model_path)
-    mean_reward, std_reward = evaluate_policy(model, env, deterministic=False, n_eval_episodes=10)
+    model.load(model_path)
+    # mean_reward, std_reward = evaluate_policy(model, env, deterministic=False, n_eval_episodes=10)
+    model.learn(
+        total_timesteps=10e6,
+        # log_interval=1,
+    )
     print(f'Mean reward: {mean_reward} +/- {std_reward:.2f}')
     env.close()
 

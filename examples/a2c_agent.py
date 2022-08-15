@@ -11,6 +11,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from kicker.reward_functions import advanced_reward
 from kicker.reward_functions import simple_reward
 from kicker.wrappers import FlattenAction
+from gym.wrappers import FlattenObservation, FrameStack, TimeLimit
 from kicker.callbacks import GoalCallback
 
 
@@ -39,7 +40,6 @@ def main():
 
     model = A2C("MlpPolicy", env, verbose=1)
     model.set_logger(new_logger)
-
 
     timesteps = 10000
     model.learn(total_timesteps=timesteps, log_interval=1, callback=[goal_callback, checkpoint_callback])
