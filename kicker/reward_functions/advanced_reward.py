@@ -35,7 +35,7 @@ def reward_function(ball_cds: Tuple[float, float, float], *args,
         ((BOARD_SIZE_X - BOARD_GATE_WALL_SIZE_X * 2) - x ** 2) + minus_mult(
             ((BOARD_SIZE_X - BOARD_GATE_WALL_SIZE_X * 2) ** 2 - x ** 2),
             (BOARD_SIZE_Z - z)),
-        (y + BOARD_SHIFT_Z))
+        (y + BOARD_SHIFT_Z)) - 800
 
 
 def simple_reward(ball_cds: Tuple[float, float, float], *args,

@@ -14,7 +14,7 @@ from kicker.gym_env import KickerEnv
 from kicker.reset_functions import camera_reset
 from kicker.reward_functions import simple_reward, advanced_reward_function
 from kicker.wrappers import FlattenAction
-from stable_baselines3 import PPO
+from stable_baselines3 import A2C
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.utils import set_random_seed
@@ -37,11 +37,11 @@ def make_env(rank: int, seed: int = 0, bullet_connection_type=pb.DIRECT) -> Call
             FlattenObservation(
                 KickerEnv(
                     bullet_connection_type=bullet_connection_type,
-                    reward_function=simple_reward,
+                    reward_function=advanced_reward_function,
                     ai_function=create_rotate_to_target_bot,
                     # ai_function=None,
-                    ball_init_lim_x = (-1, 1),
-                    ball_init_lim_y = (-1, 1)
+                    ball_init_lim_x=(-1, 1),
+                    ball_init_lim_y=(-1, 1),
                 )
             )
         )
@@ -62,21 +62,21 @@ def main():
 
     timestamp = datetime.now().strftime("%Y-%m-%d.%H-%M-%S")
 
-    model_dir = f"model/ppo_{timestamp}"
+    model_dir = f"model/a2c_a_{timestamp}"
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
 
-    logdir = f"logs/ppo_{timestamp}"
+    logdir = f"logs/a2c_a_{timestamp}"
     if not os.path.exists(logdir):
         os.makedirs(logdir)
 
     checkpoint_callback = CheckpointCallback(
-        save_freq=500000, save_path=model_dir, name_prefix="ppo"
+        save_freq=500000, save_path=model_dir, name_prefix="a2c"
     )
     goal_callback = GoalCallback()
     new_logger = configure(logdir, ["csv", "tensorboard"])
 
-    model = PPO("MlpPolicy", env, verbose=1)
+    model = A2C("MlpPolicy", env, verbose=1)
     model.set_logger(new_logger)
     model.learn(
         total_timesteps=10e6,
